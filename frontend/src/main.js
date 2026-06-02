@@ -2,6 +2,7 @@ import './style.css';
 import HomePage from './pages/HomePage.js';
 import AboutPage from './pages/AboutPage.js';
 import ProgramsPage from './pages/ProgramsPage.js';
+import ImpactPage from './pages/ImpactPage.js';
 
 const appElement = document.querySelector('#app');
 
@@ -9,6 +10,7 @@ const routes = {
   '#/': HomePage,
   '#/about': AboutPage,
   '#/programs': ProgramsPage,
+  '#/impact': ImpactPage,
 };
 
 function router() {
@@ -21,6 +23,8 @@ function router() {
     PageClass = AboutPage;
   } else if (hash === '#/programs') {
     PageClass = ProgramsPage;
+  } else if (hash === '#/impact') {
+    PageClass = ImpactPage;
   } else if (hash === '#/' || hash === '') {
     PageClass = HomePage;
   } else if (hash.startsWith('#') && !hash.startsWith('#/')) {
@@ -32,7 +36,7 @@ function router() {
   }
   
   const previousPage = appElement.dataset.currentPage;
-  const newPageName = PageClass === HomePage ? 'home' : (PageClass === AboutPage ? 'about' : 'programs');
+  const newPageName = PageClass === HomePage ? 'home' : (PageClass === AboutPage ? 'about' : (PageClass === ProgramsPage ? 'programs' : 'impact'));
   
   if (previousPage !== newPageName) {
     window.scrollTo(0, 0);

@@ -15,6 +15,7 @@ export default class Navbar {
             <a href="#/" class="hover:text-white transition-colors duration-300 py-1" id="link-home">Home</a>
             <a href="#/about" class="hover:text-white transition-colors duration-300 py-1" id="link-about">About Us</a>
             <a href="#/programs" class="hover:text-white transition-colors duration-300 py-1" id="link-programs">Programs</a>
+            <a href="#/impact" class="hover:text-white transition-colors duration-300 py-1" id="link-impact">Impact</a>
             <a href="#community" class="hover:text-white transition-colors duration-300 py-1">Community</a>
             <a href="#volunteer-form" class="hover:text-white transition-colors duration-300 py-1">Volunteer</a>
             <a href="#verify-certificate" class="hover:text-white transition-colors duration-300 py-1">Verify Certificate</a>
@@ -40,6 +41,7 @@ export default class Navbar {
             <a href="#/" class="mobile-nav-link hover:text-white transition-colors">Home</a>
             <a href="#/about" class="mobile-nav-link hover:text-white transition-colors">About Us</a>
             <a href="#/programs" class="mobile-nav-link hover:text-white transition-colors">Programs</a>
+            <a href="#/impact" class="mobile-nav-link hover:text-white transition-colors">Impact</a>
             <a href="#community" class="mobile-nav-link hover:text-white transition-colors">Community</a>
             <a href="#volunteer-form" class="mobile-nav-link hover:text-white transition-colors">Volunteer</a>
             <a href="#verify-certificate" class="mobile-nav-link hover:text-white transition-colors">Verify Certificate</a>
@@ -72,6 +74,9 @@ export default class Navbar {
       if (link) link.classList.add('active-nav');
     } else if (hash === '#/programs') {
       const link = document.getElementById('link-programs');
+      if (link) link.classList.add('active-nav');
+    } else if (hash === '#/impact') {
+      const link = document.getElementById('link-impact');
       if (link) link.classList.add('active-nav');
     } else if (hash === '#/' || hash === '') {
       const link = document.getElementById('link-home');
