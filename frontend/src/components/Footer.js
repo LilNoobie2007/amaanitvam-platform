@@ -138,8 +138,8 @@ export default class Footer {
 
             <div class="flex flex-col gap-3 col-span-2 sm:col-span-1">
               <span class="text-[10px] text-stone-600 font-bold uppercase tracking-widest">Transparency</span>
-              <a href="#verify-certificate" class="hover:text-amber-100 transition-colors duration-300">Registry</a>
-              <a href="https://www.amaanitvam.org/verify/" target="_blank" class="hover:text-amber-100 transition-colors duration-300">Verify ID</a>
+              <a href="#/verify" class="hover:text-amber-100 transition-colors duration-300">Registry</a>
+              <a href="#/verify" class="hover:text-amber-100 transition-colors duration-300">Verify ID</a>
             </div>
 
           </div>

@@ -9,7 +9,7 @@ import MyApplications from '../components/volunteer/dashboard/MyApplications.js'
 import AttendanceHistory from '../components/volunteer/workspace/AttendanceHistory.js';
 import UpcomingEvents from '../components/volunteer/dashboard/UpcomingEvents.js';
 import NotificationsCenter from '../components/volunteer/workspace/NotificationsCenter.js';
-import Certificates from '../components/volunteer/dashboard/Certificates.js';
+import VolunteerCertificates from '../components/certificates/volunteer/VolunteerCertificates.js';
 import ContributionTimeline from '../components/volunteer/workspace/ContributionTimeline.js';
 import Profile from '../components/volunteer/dashboard/Profile.js';
 import Footer from '../components/Footer.js';
@@ -27,7 +27,7 @@ export default class VolunteerDashboard {
     this.attendance = new AttendanceHistory();
     this.events = new UpcomingEvents();
     this.notifications = new NotificationsCenter();
-    this.certificates = new Certificates();
+    this.certificates = new VolunteerCertificates();
     this.timeline = new ContributionTimeline();
     this.profile = new Profile();
     this.footer = new Footer();
@@ -137,7 +137,7 @@ export default class VolunteerDashboard {
     Navbar.init();
     DashboardHero.init();
     MyTasks.init();
-    Certificates.init();
+    VolunteerCertificates.init();
     Footer.init();
 
     // Floating Auth toggle handler

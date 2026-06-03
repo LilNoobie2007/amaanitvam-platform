@@ -5,6 +5,10 @@ import ProgramsPage from './pages/ProgramsPage.js';
 import ImpactPage from './pages/ImpactPage.js';
 import VolunteerPortal from './pages/VolunteerPortal.js';
 import VolunteerDashboard from './pages/VolunteerDashboard.js';
+import CertificateVerificationPage from './pages/CertificateVerificationPage.js';
+import AdminCertificatesPage from './pages/AdminCertificatesPage.js';
+import CertificateGeneratorPage from './pages/CertificateGeneratorPage.js';
+import AdminCertificateDetailPage from './pages/AdminCertificateDetailPage.js';
 
 const appElement = document.querySelector('#app');
 
@@ -15,6 +19,10 @@ const routes = {
   '#/impact': ImpactPage,
   '#/volunteer': VolunteerPortal,
   '#/volunteer/dashboard': VolunteerDashboard,
+  '#/verify': CertificateVerificationPage,
+  '#/admin/certificates': AdminCertificatesPage,
+  '#/admin/certificates/new': CertificateGeneratorPage,
+  '#/admin/certificates/view': AdminCertificateDetailPage,
 };
 
 function router() {
@@ -39,6 +47,14 @@ function router() {
       return;
     }
     PageClass = VolunteerDashboard;
+  } else if (hash === '#/verify') {
+    PageClass = CertificateVerificationPage;
+  } else if (hash === '#/admin/certificates') {
+    PageClass = AdminCertificatesPage;
+  } else if (hash === '#/admin/certificates/new') {
+    PageClass = CertificateGeneratorPage;
+  } else if (hash.startsWith('#/admin/certificates/view')) {
+    PageClass = AdminCertificateDetailPage;
   } else if (hash === '#/' || hash === '') {
     PageClass = HomePage;
   } else if (hash.startsWith('#') && !hash.startsWith('#/')) {
@@ -57,6 +73,10 @@ function router() {
   else if (PageClass === ImpactPage) newPageName = 'impact';
   else if (PageClass === VolunteerPortal) newPageName = 'volunteer';
   else if (PageClass === VolunteerDashboard) newPageName = 'volunteer-dashboard';
+  else if (PageClass === CertificateVerificationPage) newPageName = 'verify';
+  else if (PageClass === AdminCertificatesPage) newPageName = 'admin-certificates';
+  else if (PageClass === CertificateGeneratorPage) newPageName = 'admin-certificates-new';
+  else if (PageClass === AdminCertificateDetailPage) newPageName = 'admin-certificates-view';
   
   if (previousPage !== newPageName) {
     window.scrollTo(0, 0);

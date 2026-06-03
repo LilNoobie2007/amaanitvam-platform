@@ -20,8 +20,8 @@ export default class Navbar {
             <a href="#/impact" class="hover:text-white transition-colors duration-300 py-1" id="link-impact">Impact</a>
             <a href="#/volunteer" class="hover:text-white transition-colors duration-300 py-1" id="link-volunteer">Volunteer</a>
             ${isLoggedIn ? `<a href="#/volunteer/dashboard" class="hover:text-white transition-colors duration-300 py-1" id="link-dashboard">Dashboard</a>` : ''}
-            <a href="#community" class="hover:text-white transition-colors duration-300 py-1">Community</a>
-            <a href="#verify-certificate" class="hover:text-white transition-colors duration-300 py-1">Verify Certificate</a>
+            <a href="#/verify" class="hover:text-white transition-colors duration-300 py-1" id="link-verify">Verify Certificate</a>
+            <a href="#/admin/certificates" class="hover:text-white transition-colors duration-300 py-1" id="link-admin">Admin Center</a>
           </nav>
 
           <!-- CTA & Mobile Toggle -->
@@ -47,12 +47,8 @@ export default class Navbar {
             <a href="#/impact" class="mobile-nav-link hover:text-white transition-colors">Impact</a>
             <a href="#/volunteer" class="mobile-nav-link hover:text-white transition-colors">Volunteer</a>
             ${isLoggedIn ? `<a href="#/volunteer/dashboard" class="mobile-nav-link hover:text-white transition-colors">Dashboard</a>` : ''}
-            <a href="#community" class="mobile-nav-link hover:text-white transition-colors">Community</a>
-            <a href="#verify-certificate" class="mobile-nav-link hover:text-white transition-colors">Verify Certificate</a>
-            
-            <a href="https://www.amaanitvam.org/donate/" target="_blank" class="w-full text-center mt-6 font-interface font-bold text-xs uppercase tracking-widest px-6 py-3.5 rounded bg-pink-ruby text-white transition-all duration-300">
-              Donate Now
-            </a>
+            <a href="#/verify" class="mobile-nav-link hover:text-white transition-colors">Verify Certificate</a>
+            <a href="#/admin/certificates" class="mobile-nav-link hover:text-white transition-colors">Admin Center</a>
           </nav>
         </div>
       </header>
@@ -87,6 +83,12 @@ export default class Navbar {
       if (link) link.classList.add('active-nav');
     } else if (hash === '#/volunteer/dashboard') {
       const link = document.getElementById('link-dashboard');
+      if (link) link.classList.add('active-nav');
+    } else if (hash === '#/verify') {
+      const link = document.getElementById('link-verify');
+      if (link) link.classList.add('active-nav');
+    } else if (hash.startsWith('#/admin/certificates')) {
+      const link = document.getElementById('link-admin');
       if (link) link.classList.add('active-nav');
     } else if (hash === '#/' || hash === '') {
       const link = document.getElementById('link-home');
