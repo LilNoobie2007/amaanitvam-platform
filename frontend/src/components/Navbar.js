@@ -1,5 +1,7 @@
 export default class Navbar {
   render() {
+    const isLoggedIn = localStorage.getItem('amaanitvam_volunteer_logged_in') === 'true';
+
     return `
       <header class="absolute top-0 left-0 w-full z-50 transition-all duration-500 border-b border-white/5 text-stone-200 navigation-header" id="nav-header">
         <div class="max-w-7xl mx-auto px-6 h-20 md:h-24 flex items-center justify-between">
@@ -16,8 +18,9 @@ export default class Navbar {
             <a href="#/about" class="hover:text-white transition-colors duration-300 py-1" id="link-about">About Us</a>
             <a href="#/programs" class="hover:text-white transition-colors duration-300 py-1" id="link-programs">Programs</a>
             <a href="#/impact" class="hover:text-white transition-colors duration-300 py-1" id="link-impact">Impact</a>
+            <a href="#/volunteer" class="hover:text-white transition-colors duration-300 py-1" id="link-volunteer">Volunteer</a>
+            ${isLoggedIn ? `<a href="#/volunteer/dashboard" class="hover:text-white transition-colors duration-300 py-1" id="link-dashboard">Dashboard</a>` : ''}
             <a href="#community" class="hover:text-white transition-colors duration-300 py-1">Community</a>
-            <a href="#volunteer-form" class="hover:text-white transition-colors duration-300 py-1">Volunteer</a>
             <a href="#verify-certificate" class="hover:text-white transition-colors duration-300 py-1">Verify Certificate</a>
           </nav>
 
@@ -42,8 +45,9 @@ export default class Navbar {
             <a href="#/about" class="mobile-nav-link hover:text-white transition-colors">About Us</a>
             <a href="#/programs" class="mobile-nav-link hover:text-white transition-colors">Programs</a>
             <a href="#/impact" class="mobile-nav-link hover:text-white transition-colors">Impact</a>
+            <a href="#/volunteer" class="mobile-nav-link hover:text-white transition-colors">Volunteer</a>
+            ${isLoggedIn ? `<a href="#/volunteer/dashboard" class="mobile-nav-link hover:text-white transition-colors">Dashboard</a>` : ''}
             <a href="#community" class="mobile-nav-link hover:text-white transition-colors">Community</a>
-            <a href="#volunteer-form" class="mobile-nav-link hover:text-white transition-colors">Volunteer</a>
             <a href="#verify-certificate" class="mobile-nav-link hover:text-white transition-colors">Verify Certificate</a>
             
             <a href="https://www.amaanitvam.org/donate/" target="_blank" class="w-full text-center mt-6 font-interface font-bold text-xs uppercase tracking-widest px-6 py-3.5 rounded bg-pink-ruby text-white transition-all duration-300">
@@ -77,6 +81,12 @@ export default class Navbar {
       if (link) link.classList.add('active-nav');
     } else if (hash === '#/impact') {
       const link = document.getElementById('link-impact');
+      if (link) link.classList.add('active-nav');
+    } else if (hash === '#/volunteer') {
+      const link = document.getElementById('link-volunteer');
+      if (link) link.classList.add('active-nav');
+    } else if (hash === '#/volunteer/dashboard') {
+      const link = document.getElementById('link-dashboard');
       if (link) link.classList.add('active-nav');
     } else if (hash === '#/' || hash === '') {
       const link = document.getElementById('link-home');
