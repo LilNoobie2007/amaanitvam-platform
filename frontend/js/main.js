@@ -59,6 +59,66 @@
     });
   });
 
+  /* Contact form */
+  const contactForm = document.getElementById('contactForm');
+  const contactStatus = document.getElementById('contact-status');
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const submitButton = contactForm.querySelector('button[type="submit"]');
+      const originalButtonHtml = submitButton ? submitButton.innerHTML : '';
+      const formData = new FormData(contactForm);
+      const apiUrl = contactForm.dataset.apiUrl || 'http://localhost:5000/api/contact';
+
+      if (contactStatus) {
+        contactStatus.textContent = 'Sending your message...';
+      }
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">progress_activity</span> Sending...';
+      }
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: formData.get('name'),
+            email: formData.get('email'),
+            subject: formData.get('subject'),
+            message: formData.get('message')
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to send message');
+        }
+
+        contactForm.reset();
+
+        if (contactStatus) {
+          contactStatus.textContent = result.message || 'Message sent successfully.';
+        }
+      } catch (error) {
+        if (contactStatus) {
+          contactStatus.textContent = error.message || 'Something went wrong. Please try again.';
+        }
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.innerHTML = originalButtonHtml;
+        }
+      }
+    });
+  }
+
   /* Certificate verification demo */
   const verifyForm = document.getElementById('verify-form');
   if (verifyForm) {
