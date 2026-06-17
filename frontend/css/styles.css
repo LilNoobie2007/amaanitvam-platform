@@ -1085,6 +1085,7 @@ h1, h2, h3, h4, h5, h6 {
 .donate-section {
   text-align: center;
   padding: 1rem 0;
+  background:#D8B4B4 !important;
 }
 
 /* ── Floating Donate Button ── */
@@ -1312,7 +1313,7 @@ h1, h2, h3, h4, h5, h6 {
 .site-footer{
   background:#171717 !important;
   color:#d6d6d6;
-  padding:28px 0 0;
+  padding:60px 0 0;
 }
 
 .footer-container{
@@ -2028,6 +2029,25 @@ h1, h2, h3, h4, h5, h6 {
     gap:20px;
     flex-wrap:wrap;
     margin-top:10px;
+}
+.hero-actions .btn{
+    background:#FF1493 !important;   /* Hot Pink */
+    color:#fff !important;
+}
+
+.hero-actions .btn:hover{
+    background:#E6007E !important;
+}
+.hero-actions .btn:hover{
+    background:#865B69 !important;
+}
+
+.hero-actions .btn:hover{
+    background:#B98D8D !important;
+}
+
+.hero-actions .btn:hover{
+    background:#0f1d39 !important;
 }
 
 .floating-socials .fa-facebook-f{
