@@ -416,3 +416,24 @@ if (payButton) {
   });
 
 }
+const socialBar = `
+<div class="floating-socials">
+    <a href="https://www.facebook.com/people/Amaanitvam-Foundation/61583427622759/" target="_blank">
+        <i class="fa-brands fa-facebook-f"></i>
+    </a>
+
+    <a href="https://www.instagram.com/amaanitvamfoundation" target="_blank">
+        <i class="fa-brands fa-instagram"></i>
+    </a>
+
+    <a href="https://x.com/AmaanitvamOrg" target="_blank">
+        <i class="fa-brands fa-x-twitter"></i>
+    </a>
+
+    <a href="https://www.linkedin.com/company/amaanitvam-foundation/" target="_blank">
+        <i class="fa-brands fa-linkedin-in"></i>
+    </a>
+</div>
+`;
+
+document.body.insertAdjacentHTML("beforeend", socialBar);

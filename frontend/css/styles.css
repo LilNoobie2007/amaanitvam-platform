@@ -118,7 +118,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .brand-name{
     font-family:'Montserrat',sans-serif;
-    font-size:3rem;
+    font: size 2.7em;
     font-weight:800;
     letter-spacing:1px;
     color:#2f2430;
@@ -127,9 +127,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .brand-subtitle{
     font-family:'Montserrat',sans-serif;
-    font-size:1.2rem;
+    font-size:1.05rem;
     font-weight:600;
-    letter-spacing:3px;
+    letter-spacing:4px;
     color:#c69558;
     text-transform:uppercase;
 }
@@ -1004,25 +1004,32 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ── Floating Donate Button ── */
-.floating-donate {
-  position: fixed;
-  bottom: 20px; right: 20px;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  color: var(--navy);
-  padding: 12px 22px;
-  border-radius: 999px;
-  text-decoration: none;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  z-index: 9999;
-  box-shadow: 0 6px 20px rgba(212, 165, 116, 0.4);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.floating-donate:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 26px rgba(212, 165, 116, 0.5);
+.floating-donate{
+    position:fixed;
+    bottom:25px;
+    right:25px;
+
+    background:#d7a66a !important; 
+    color:#3b2b35 !important;
+
+    padding:18px 34px !important;
+    border-radius:999px !important;
+
+    text-decoration:none;
+    font-family:'Poppins',sans-serif;
+    font-size:16px;
+    font-weight:700;
+
+    z-index:9999;
+
+    box-shadow:0 8px 24px rgba(215,166,106,.35);
+    transition:.3s ease;
 }
 
+.floating-donate:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 30px rgba(215,166,106,.45);
+}
 /* =========================
    FOOTER
 ========================= */
@@ -1376,6 +1383,9 @@ h1, h2, h3, h4, h5, h6 {
     left:0;
     top:50%;
     transform:translateY(-50%);
+    background:#1b1b1b;
+    border-radius:0 12px 12px 0;
+    overflow:hidden;
     z-index:9999;
 }
 
@@ -1383,16 +1393,15 @@ h1, h2, h3, h4, h5, h6 {
     display:flex;
     align-items:center;
     justify-content:center;
-    width:45px;      /* reduced from 55px */
-    height:45px;     /* reduced from 55px */
+    width:55px;
+    height:55px;
     color:#fff;
     text-decoration:none;
-    font-size:18px;  /* reduced from 22px */
-    transition:0.3s;
+    font-size:22px;
 }
 
 .floating-socials a:hover{
-    width:52px;      /* reduced hover size */
+    background:#2c2c2c;
 }
 
 .facebook{
@@ -1839,4 +1848,29 @@ h1, h2, h3, h4, h5, h6 {
     gap:20px;
     flex-wrap:wrap;
     margin-top:10px;
+}
+
+.floating-socials .fa-facebook-f{
+    color:#1877F2;
+}
+
+.floating-socials .fa-instagram{
+    color:#E4405F;
+}
+
+.floating-socials .fa-x-twitter{
+    color:#ffffff;
+}
+
+.floating-socials .fa-linkedin-in{
+    color:#0A66C2;
+}
+
+.floating-socials a:hover i{
+    transform:scale(1.15);
+    transition:.3s ease;
+}
+
+.floating-socials a{
+    background:#1b1b1b;
 }
