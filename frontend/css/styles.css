@@ -1799,3 +1799,44 @@ h1, h2, h3, h4, h5, h6 {
     color: white;
     font-size: 20px;
 }
+.hero-title{
+    color:#ffffff !important;
+}
+
+.hero-desc{
+    color:rgba(255,255,255,0.95) !important;
+}
+/* Hero Text Placement Fix */
+
+.hero-content{
+    max-width:700px;
+    padding-left:60px;
+    justify-content:center;
+    transform:translateY(-40px);
+}
+
+.hero-badge{
+    margin-bottom:20px;
+}
+
+.hero-title{
+    max-width:750px;
+    font-size:clamp(3rem,5vw,5rem);
+    line-height:1.05;
+    text-align:left;
+    margin-bottom:20px;
+}
+
+.hero-desc,
+.hero-description{
+    max-width:650px;
+    line-height:1.8;
+    margin-bottom:30px;
+}
+
+.hero-actions{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-top:10px;
+}
