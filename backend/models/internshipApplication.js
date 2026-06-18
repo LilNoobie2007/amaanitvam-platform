@@ -1,0 +1,99 @@
+import mongoose from "mongoose";
+
+const internshipApplicationSchema = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+            required: true,
+            trim: true,
+            maxlength: 120
+        },
+        email: {
+            type: String,
+            required: true,
+            trim: true,
+            lowercase: true,
+            maxlength: 180
+        },
+        phone: {
+            type: String,
+            required: true,
+            trim: true,
+            maxlength: 20
+        },
+        track: {
+            type: String,
+            required: true,
+            trim: true,
+            enum: [
+                "Project Management",
+                "Community Development",
+                "Research & Documentation",
+                "Marketing & Outreach"
+            ]
+        },
+        university: {
+            type: String,
+            trim: true,
+            maxlength: 200
+        },
+        currentYear: {
+            type: String,
+            trim: true,
+            maxlength: 50
+        },
+        motivation: {
+            type: String,
+            required: true,
+            trim: true,
+            maxlength: 5000
+        },
+        portfolioUrl: {
+            type: String,
+            trim: true,
+            maxlength: 500
+        },
+        startDate: {
+            type: String,
+            trim: true,
+            maxlength: 50
+        },
+        duration: {
+            type: String,
+            trim: true,
+            maxlength: 50
+        },
+        status: {
+            type: String,
+            enum: ["pending", "reviewing", "accepted", "rejected"],
+            default: "pending",
+            index: true
+        },
+        ipAddress: {
+            type: String,
+            required: true,
+            trim: true,
+            maxlength: 80
+        },
+        userAgent: {
+            type: String,
+            required: true,
+            trim: true,
+            maxlength: 400
+        },
+        submissionTimestamp: {
+            type: Date,
+            default: Date.now,
+            index: true
+        }
+    },
+    {
+        timestamps: true
+    }
+);
+
+internshipApplicationSchema.index({ submissionTimestamp: -1 });
+
+const InternshipApplication = mongoose.model("InternshipApplication", internshipApplicationSchema);
+
+export default InternshipApplication;

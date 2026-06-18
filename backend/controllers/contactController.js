@@ -1,4 +1,4 @@
-import Contact from "../models/Contact.js";
+import Contact from "../models/contact.js";
 import { sendAdminNotificationEmail, sendUserAutoReplyEmail } from "../services/emailService.js";
 
 export const createContact = async (req, res) => {

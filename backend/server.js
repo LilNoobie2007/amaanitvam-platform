@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 
 import connectDB from "./config/db.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import internshipRoutes from "./routes/internshipRoutes.js";
+import volunteerRoutes from "./routes/volunteerRoutes.js";
+import webhookRoutes from "./routes/webhookRoutes.js";
 
 dotenv.config();
 
@@ -20,6 +23,9 @@ app.use(express.json({ limit: "100kb" }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/contact", contactRoutes);
+app.use("/api/internship", internshipRoutes);
+app.use("/api/volunteer", volunteerRoutes);
+app.use("/api/webhook", webhookRoutes);
 
 app.get("/", (req, res) => {
     res.send("Backend Running");
