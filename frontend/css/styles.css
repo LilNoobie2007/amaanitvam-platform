@@ -2483,9 +2483,15 @@ p{
 }
 
 /* Donate section */
+.section.section-alt {
+  padding: 40px 24px !important; 
+  background: #fff7f8 !important; 
+}
 .donate-section{
   background:linear-gradient(135deg,#5d0f2d,#7a1d44) !important;
   color:#ffffff !important;
+  padding: 80px 45px !important; 
+  margin: 0 auto !important;
 }
 
 .donate-section .section-title,
