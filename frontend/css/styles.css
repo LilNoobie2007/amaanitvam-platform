@@ -108,7 +108,7 @@ h1, h2, h3, h4, h5, h6 {
     font: size 2.7em;
     font-weight:800;
     letter-spacing:1px;
-    color:#2f2430;
+    color:#ffffff;
     text-transform:uppercase;
 }
 
@@ -128,7 +128,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Transparent (hero overlay) state */
 .site-nav.is-transparent {
-  background: #ffffff;
+  background: #5d0f2d;
 }
 
 /* ── Logo ── */
@@ -220,7 +220,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Poppins', system-ui, sans-serif;
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--navy);
+  color: #ffffff;
   letter-spacing: 0.01em;
   border-radius: 8px;
   white-space: nowrap;
