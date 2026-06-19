@@ -92,9 +92,8 @@ h1, h2, h3, h4, h5, h6 {
 .brand {
   display: flex;
   align-items: center;
-  gap: 14px;
-  text-decoration: none;
-  flex-shrink: 0;
+  gap: 12px;
+  overflow: visible;
 }
 
 .brand-text {
@@ -2617,22 +2616,25 @@ p{
     box-shadow: 0 25px 60px rgba(0,0,0,0.2);
 }
 .site-header{
-    min-height: 90px;
+    min-height: 68px;
 }
 
-.site-nav{
-    min-height: 90px;
+.site-nav,
+.navbar {
+  height: 68px;
+  min-height: 68px;
+  padding: 0 36px;
 }
 
 .nav-inner{
-    min-height: 90px;
-    padding: 0 40px;
+    min-height: 68px;
+    padding: 0 25px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 .brand-logo{
-    height: 70px;
+    height: 48px;
     width: auto;
 }
 
@@ -2644,13 +2646,13 @@ p{
     font-size: 1rem;
 }
 .nav-links{
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .nav-link{
-    font-size: 1.15rem;
+    font-size: 1rem;
     font-weight: 600;
-    padding: 12px 18px;
+    padding: 8px 14px;
 }
 .dropdown-trigger{
     min-height: 50px;
@@ -2664,7 +2666,7 @@ p{
 .nav-inner{
     display: flex;
     align-items: center;
-    min-height: 90px;
+    min-height: 68px;
 }
 
 .brand{
@@ -2672,7 +2674,7 @@ p{
 }
 
 .nav-links{
-    margin-left: 180px;
+    margin-left: auto;
     display: flex;
     align-items: center;
     gap: 2.5rem;
@@ -2680,7 +2682,7 @@ p{
 /* Move logo section left */
 
 .brand{
-    margin-left: -100px !important;
+    margin-left: 0px !important;
 }
 
 .brand-logo{
