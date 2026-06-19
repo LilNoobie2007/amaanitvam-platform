@@ -1,8 +1,5 @@
 /* =====================================================
-   AMAANITVAM FOUNDATION — REFINED GLOBAL STYLES
-   Cleaned duplicate CSS, PDF-inspired fonts & theme
-   Fonts required in HTML:
-   Cormorant Garamond + Inter + Montserrat
+   AMAANITVAM FOUNDATION —css
 ===================================================== */
 
 :root{
@@ -586,4 +583,19 @@ h1,h2,h3,h4,h5,h6,
   .footer-container{grid-template-columns:1fr;}
   .section-label{letter-spacing:.28em;font-size:.75rem;}
   .section.section-white{padding:60px 16px;}
+}
+
+
+/* ===== FINAL NAV SAFETY OVERRIDE ===== */
+/* Collaborations & Partnerships must stay only inside Resources dropdown. */
+.nav-links > .collaborations-nav,
+.nav-links > .collaboration-nav,
+.nav-links > .partners-nav,
+.nav-links > a[href="collaborations.html"]{
+  display:none !important;
+}
+
+/* Keep dropdown collaboration item visible inside Resources. */
+.dropdown-menu a[href="collaborations.html"]{
+  display:flex !important;
 }
