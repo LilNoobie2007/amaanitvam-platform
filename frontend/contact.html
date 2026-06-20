@@ -453,13 +453,13 @@
       </h2>
 
       <label>Full Name</label>
-      <input type="text" placeholder="Enter your full name">
+      <input type="text" id="donorName" placeholder="Enter your full name" required>
 
       <label>Email Address</label>
-      <input type="email" placeholder="your.email@example.com">
+      <input type="email" id="donorEmail" placeholder="your.email@example.com" required>
 
       <label>Phone Number</label>
-      <input type="tel" placeholder="10-digit phone number">
+      <input type="tel" id="donorPhone" placeholder="10-digit phone number" pattern="\d{10}" maxlength="10">
 
       <label>Select Amount</label>
 
@@ -498,6 +498,7 @@
       <button id="payButton" class="pay-button">
         Proceed to Pay Securely
       </button>
+      <div id="donate-status" style="margin-top: 0.75rem; text-align: center; font-weight: 600;"></div>
      <p class="payment-note">
   🔒 Your payment information is encrypted and never stored on our servers
 </p>
@@ -620,7 +621,148 @@
   </a>
 </div>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="js/main.js"></script>
+<script>
+(function() {
+  // Amount selection logic
+  let selectedAmount = 0;
+  const amountBtns = document.querySelectorAll('.amount-btn');
+  const customAmountInput = document.getElementById('customAmount');
+
+  amountBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      amountBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      selectedAmount = Number(btn.dataset.amount);
+      if (customAmountInput) customAmountInput.value = '';
+    });
+  });
+
+  if (customAmountInput) {
+    customAmountInput.addEventListener('input', function() {
+      amountBtns.forEach(function(b) { b.classList.remove('active'); });
+      selectedAmount = Number(customAmountInput.value) || 0;
+    });
+  }
+
+  // Pay button handler
+  var payButton = document.getElementById('payButton');
+  var donateStatus = document.getElementById('donate-status');
+
+  if (payButton) {
+    payButton.addEventListener('click', async function() {
+      var name = document.getElementById('donorName').value.trim();
+      var email = document.getElementById('donorEmail').value.trim();
+      var phone = document.getElementById('donorPhone').value.trim();
+
+      if (!name || !email) {
+        donateStatus.textContent = 'Please enter your name and email.';
+        donateStatus.style.color = 'red';
+        return;
+      }
+
+      if (selectedAmount < 10) {
+        donateStatus.textContent = 'Minimum donation amount is ₹10.';
+        donateStatus.style.color = 'red';
+        return;
+      }
+
+      payButton.disabled = true;
+      payButton.textContent = 'Processing...';
+      donateStatus.textContent = '';
+
+      try {
+        // Step 1: Create order on backend
+        var response = await fetch('http://localhost:5000/api/donate/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, email: email, phone: phone, amount: selectedAmount })
+        });
+        var data = await response.json();
+
+        if (!response.ok || !data.success) {
+          donateStatus.textContent = data.message || 'Failed to create order.';
+          donateStatus.style.color = 'red';
+          payButton.disabled = false;
+          payButton.textContent = 'Proceed to Pay Securely';
+          return;
+        }
+
+        // Step 2: Open Razorpay Checkout
+        var options = {
+          key: data.key,
+          amount: data.order.amount,
+          currency: data.order.currency,
+          name: 'Amaanitvam Foundation',
+          description: 'Donation to Amaanitvam Foundation',
+          order_id: data.order.id,
+          prefill: {
+            name: data.donor.name,
+            email: data.donor.email,
+            contact: data.donor.phone
+          },
+          theme: {
+            color: '#56051a'
+          },
+          handler: async function(paymentResponse) {
+            // Step 3: Verify payment on backend
+            try {
+              var verifyRes = await fetch('http://localhost:5000/api/donate/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  razorpay_order_id: paymentResponse.razorpay_order_id,
+                  razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                  razorpay_signature: paymentResponse.razorpay_signature
+                })
+              });
+              var verifyData = await verifyRes.json();
+
+              if (verifyRes.ok && verifyData.success) {
+                donateStatus.textContent = '✅ ' + (verifyData.message || 'Payment successful! Thank you!');
+                donateStatus.style.color = '#22c55e';
+                // Reset form
+                document.getElementById('donorName').value = '';
+                document.getElementById('donorEmail').value = '';
+                document.getElementById('donorPhone').value = '';
+                if (customAmountInput) customAmountInput.value = '';
+                amountBtns.forEach(function(b) { b.classList.remove('active'); });
+                selectedAmount = 0;
+              } else {
+                donateStatus.textContent = verifyData.message || 'Payment verification failed.';
+                donateStatus.style.color = 'red';
+              }
+            } catch (err) {
+              donateStatus.textContent = 'Payment verification error. Please contact support.';
+              donateStatus.style.color = 'red';
+            }
+            payButton.disabled = false;
+            payButton.textContent = 'Proceed to Pay Securely';
+          },
+          modal: {
+            ondismiss: function() {
+              payButton.disabled = false;
+              payButton.textContent = 'Proceed to Pay Securely';
+              donateStatus.textContent = 'Payment was cancelled.';
+              donateStatus.style.color = '#888';
+            }
+          }
+        };
+
+        var rzp = new Razorpay(options);
+        rzp.open();
+
+      } catch (err) {
+        donateStatus.textContent = 'Failed to connect to the server.';
+        donateStatus.style.color = 'red';
+        payButton.disabled = false;
+        payButton.textContent = 'Proceed to Pay Securely';
+      }
+    });
+  }
+})();
+</script>
 <script>
   (function () {
     const nav = document.getElementById('site-nav');

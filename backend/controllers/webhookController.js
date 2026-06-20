@@ -8,19 +8,11 @@ import {
 export const handleGoogleFormWebhook = async (req, res) => {
 
     try {
-        const { 
-            formType, name, email, phone 
-        }
-         = req.body;
-        const ipAddress = req.clientIp || "Webhook";
-        const userAgent = req.get("user-agent") || "Google-Forms-Webhook";
+        const { formType, name, email, phone } = req.body;
 
         if (formType === "internship") {
 
-            const { 
-                track, university, currentYear, motivation, portfolioUrl, startDate, duration 
-            }
-             = req.body;
+            const { track, university, currentYear, motivation, portfolioUrl, duration } = req.body;
 
             const newApplication = new InternshipApplication({
                 name,
@@ -31,27 +23,19 @@ export const handleGoogleFormWebhook = async (req, res) => {
                 currentYear,
                 motivation,
                 portfolioUrl,
-                startDate,
                 duration,
-                ipAddress,
-                userAgent,
                 submissionTimestamp: new Date()
             });
 
             await newApplication.save();
 
-            try {
-                await Promise.all([
-                    sendInternshipConfirmationEmail({ 
-                        application: newApplication 
-                    }),
-                    sendInternshipAdminEmail({ 
-                        application: newApplication 
-                    })
-                ]);
-            } catch (emailError) {
-                console.error("Webhook internship email delivery failed:", emailError);
-            }
+            // Send emails in the background
+            Promise.all([
+                sendInternshipConfirmationEmail({ application: newApplication }),
+                sendInternshipAdminEmail({ application: newApplication })
+            ]).catch((emailErr) => {
+                console.error("Webhook internship email delivery failed:", emailErr);
+            });
 
             res.status(201).json({
                 success: true,
@@ -60,10 +44,7 @@ export const handleGoogleFormWebhook = async (req, res) => {
 
         } else if (formType === "volunteer") {
 
-            const { 
-                role, availability, skills, motivation 
-            }
-             = req.body;
+            const { role, availability, skills, motivation } = req.body;
 
             const newApplication = new VolunteerApplication({
                 name,
@@ -73,25 +54,18 @@ export const handleGoogleFormWebhook = async (req, res) => {
                 availability,
                 skills,
                 motivation,
-                ipAddress,
-                userAgent,
                 submissionTimestamp: new Date()
             });
 
             await newApplication.save();
 
-            try {
-                await Promise.all([
-                    sendVolunteerConfirmationEmail({ 
-                        application: newApplication 
-                    }),
-                    sendVolunteerAdminEmail({ 
-                        application: newApplication 
-                    })
-                ]);
-            } catch (emailError) {
-                console.error("Webhook volunteer email delivery failed:", emailError);
-            }
+            // Send emails in the background
+            Promise.all([
+                sendVolunteerConfirmationEmail({ application: newApplication }),
+                sendVolunteerAdminEmail({ application: newApplication })
+            ]).catch((emailErr) => {
+                console.error("Webhook volunteer email delivery failed:", emailErr);
+            });
 
             res.status(201).json({
                 success: true,
