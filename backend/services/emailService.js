@@ -113,8 +113,6 @@ export const sendAdminNotificationEmail = async ({ contact }) => {
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Subject</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(contact.subject)}</td></tr>
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Message</td><td style="padding:12px;border:1px solid #dce4ef;white-space:pre-wrap;">${toHtmlParagraph(contact.message)}</td></tr>
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Submission Time</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(submissionTime)}</td></tr>
-                    <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">IP Address</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(contact.ipAddress)}</td></tr>
-                    <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Browser / User Agent</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(contact.userAgent)}</td></tr>
                 </tbody>
             </table>
         `,
@@ -134,9 +132,7 @@ export const sendAdminNotificationEmail = async ({ contact }) => {
             `Email Address: ${contact.email}`,
             `Subject: ${contact.subject}`,
             `Message: ${contact.message}`,
-            `Submission Time: ${submissionTime}`,
-            `IP Address: ${contact.ipAddress}`,
-            `Browser / User Agent: ${contact.userAgent}`
+            `Submission Time: ${submissionTime}`
         ].join("\n"),
         html
     });
@@ -217,11 +213,8 @@ export const sendInternshipAdminEmail = async ({ application }) => {
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Current Year</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(application.currentYear)}</td></tr>
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Motivation</td><td style="padding:12px;border:1px solid #dce4ef;white-space:pre-wrap;">${toHtmlParagraph(String(application.motivation || "").slice(0, 500))}</td></tr>
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Portfolio URL</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(application.portfolioUrl)}</td></tr>
-                    <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Preferred Start</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(application.startDate)}</td></tr>
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Duration</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(application.duration)}</td></tr>
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Submission Time</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(submissionTime)}</td></tr>
-                    <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">IP Address</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(application.ipAddress)}</td></tr>
-                    <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Browser / User Agent</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(application.userAgent)}</td></tr>
                 </tbody>
             </table>
         `,
@@ -245,11 +238,8 @@ export const sendInternshipAdminEmail = async ({ application }) => {
             `Current Year: ${application.currentYear}`,
             `Motivation: ${String(application.motivation || "").slice(0, 500)}`,
             `Portfolio URL: ${application.portfolioUrl}`,
-            `Preferred Start: ${application.startDate}`,
             `Duration: ${application.duration}`,
-            `Submission Time: ${submissionTime}`,
-            `IP Address: ${application.ipAddress}`,
-            `Browser / User Agent: ${application.userAgent}`
+            `Submission Time: ${submissionTime}`
         ].join("\n"),
         html
     });
@@ -331,8 +321,6 @@ export const sendVolunteerAdminEmail = async ({ application }) => {
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Skills</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(application.skills)}</td></tr>
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Motivation</td><td style="padding:12px;border:1px solid #dce4ef;white-space:pre-wrap;">${toHtmlParagraph(String(application.motivation || "").slice(0, 500))}</td></tr>
                     <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Submission Time</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(submissionTime)}</td></tr>
-                    <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">IP Address</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(application.ipAddress)}</td></tr>
-                    <tr><td style="padding:12px;border:1px solid #dce4ef;background:#f8fafc;font-weight:700;">Browser / User Agent</td><td style="padding:12px;border:1px solid #dce4ef;">${escapeHtml(application.userAgent)}</td></tr>
                 </tbody>
             </table>
         `,
@@ -355,9 +343,7 @@ export const sendVolunteerAdminEmail = async ({ application }) => {
             `Availability: ${application.availability}`,
             `Skills: ${application.skills}`,
             `Motivation: ${String(application.motivation || "").slice(0, 500)}`,
-            `Submission Time: ${submissionTime}`,
-            `IP Address: ${application.ipAddress}`,
-            `Browser / User Agent: ${application.userAgent}`
+            `Submission Time: ${submissionTime}`
         ].join("\n"),
         html
     });
