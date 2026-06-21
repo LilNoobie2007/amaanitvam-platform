@@ -1811,3 +1811,26 @@ body[data-page="faq"] .page-hero .section-desc{
     color:#6b5b55 !important;
     opacity:1 !important;
 }
+/* Impact Page Success Stories Center Fix */
+.elegant-header{
+    width:100%;
+    max-width:900px;
+    margin:0 auto 4rem !important;
+    text-align:center !important;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.elegant-header .elegant-label,
+.elegant-header .elegant-title,
+.elegant-header .elegant-desc{
+    text-align:center !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+}
+
+.elegant-header .elegant-desc{
+    max-width:700px;
+}
