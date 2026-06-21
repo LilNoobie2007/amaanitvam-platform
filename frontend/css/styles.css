@@ -2597,3 +2597,176 @@ body[data-page="verify"] .card .section-label{
     margin-top:10px !important;
     margin-bottom:0 !important;
 }
+/* Compact Donation Form */
+
+.donation-form-card{
+    padding:30px !important;
+}
+
+.donation-heading{
+    margin-bottom:20px !important;
+}
+
+.donation-form-card label{
+    margin:12px 0 6px !important;
+    font-size:15px !important;
+}
+
+.donation-form-card input{
+    padding:14px 18px !important;
+    border-radius:14px !important;
+}
+
+.amount-buttons{
+    gap:10px !important;
+    margin-top:10px !important;
+}
+
+.amount-btn{
+    padding:12px !important;
+    border-radius:40px !important;
+}
+
+.custom-amount-wrapper{
+    margin-top:12px !important;
+}
+
+.minimum-note{
+    margin-top:8px !important;
+    font-size:13px !important;
+}
+
+.security-badges{
+    margin:16px 0 !important;
+    padding:14px !important;
+}
+
+.pay-button{
+    padding:16px !important;
+    font-size:1.1rem !important;
+}
+
+.payment-note{
+    margin-top:12px !important;
+    font-size:14px !important;
+}
+
+/* Desktop layout */
+@media (min-width: 1200px){
+    .donation-container{
+        gap:24px !important;
+        align-items:flex-start !important;
+    }
+
+    .donation-form-card{
+        transform:scale(0.95);
+        transform-origin:top left;
+    }
+}
+/* Ultra Compact Donation Form */
+
+.donation-form-card{
+    padding:20px !important;
+}
+
+.donation-heading{
+    font-size:2rem !important;
+    margin-bottom:12px !important;
+}
+
+.donation-form-card label{
+    margin:8px 0 4px !important;
+    font-size:14px !important;
+}
+
+.donation-form-card input{
+    height:48px !important;
+    padding:10px 14px !important;
+    border-radius:12px !important;
+}
+
+.amount-buttons{
+    gap:8px !important;
+    margin-top:8px !important;
+}
+
+.amount-btn{
+    padding:10px !important;
+    min-height:44px !important;
+    font-size:15px !important;
+}
+
+.custom-amount-wrapper{
+    margin-top:10px !important;
+}
+
+.minimum-note{
+    margin-top:5px !important;
+    font-size:12px !important;
+}
+
+.security-badges{
+    margin:12px 0 !important;
+    padding:12px !important;
+    font-size:12px !important;
+}
+
+.pay-button{
+    padding:14px !important;
+    font-size:1rem !important;
+    border-radius:14px !important;
+}
+
+.payment-note{
+    margin-top:8px !important;
+    font-size:13px !important;
+}
+
+/* Make entire left card smaller */
+.donation-container{
+    gap:20px !important;
+}
+
+@media (min-width: 1024px){
+    .donation-form-card{
+        zoom:0.85;
+    }
+
+    .impact-card,
+    .tax-card,
+    .secure-card{
+        zoom:0.9;
+    }
+}
+.tax-card{
+    margin-bottom:8px !important;
+}
+
+.secure-card{
+    margin-top:0 !important;
+}
+
+.donation-info{
+    gap:8px !important;
+}
+.donation-form-card{
+    height: 100% !important;
+    min-height: 900px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+.tax-card{
+    margin-bottom: 10px !important;
+}
+
+.security-card{
+    margin-top: 10px !important;
+}
+.donation-info{
+    gap: 0 !important;
+}
+.tax-card{
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+}
