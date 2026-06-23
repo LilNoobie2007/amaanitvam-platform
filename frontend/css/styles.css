@@ -521,7 +521,7 @@ h6,
 .section-label {
   display: inline-block;
   font-family: var(--font-ui) !important;
-  font-size: .82rem;
+  font-size: 2 rem;
   font-weight: 500;
   letter-spacing: .45em;
   text-transform: uppercase;
@@ -1352,14 +1352,14 @@ h6,
 }
 
 .section:has(.donate-section) .container {
-  max-width: 750px !important;
-  padding: 0 !important
+  max-width: 1100px !important;
+  padding: 0 20px !important;
 }
 
 .donate-section {
-  max-width: 720px !important;
+  max-width: 1200% !important;
   margin: 0 auto !important;
-  padding: 2.5rem 1.5rem !important;
+  padding: 4rem 3rem !important;
   border-radius: 24px !important;
   background: linear-gradient(135deg, #690b31, #8a164b) !important;
   text-align: center !important;
@@ -2973,32 +2973,29 @@ body[data-page="impact"] .donate-section {
   margin-bottom: 1.5rem;
 }
 
-/* programs(1).html | data-page="programs" */
-/* ── Programs page: tighter vertical rhythm & alignment to match about.html ──
-       Scoped to [data-page="programs"] only. ──────────────────────────────────── */
-
-/* Hero: same compact sizing as about.html */
 body[data-page="programs"] .page-hero.has-image {
-  padding: 4rem 0 !important;
-  min-height: 380px !important;
+  padding: 6rem 0 !important;
+  min-height: 550px !important;
 }
 
-/* Reduce section padding to match about.html */
 body[data-page="programs"] main#main-content>section.section {
   padding: 2.75rem 0 !important;
 }
 
-/* Section headers: tighter bottom margin */
 body[data-page="programs"] .section-header {
   margin-bottom: 1.75rem !important;
 }
 
-/* Grid gaps consistent with about.html two-col rows */
 body[data-page="programs"] .grid-2 {
   gap: 2.25rem !important;
 }
 
-/* Responsive: 5-col cards drop gracefully on smaller screens */
+body[data-page="about"] .page-hero .section-label{
+    font-size: 1.4rem !important;
+    letter-spacing: 0.45em !important;
+    color: var(--gold) !important;
+}
+
 @media (max-width: 1024px) {
   body[data-page="programs"] .programs-5col {
     grid-template-columns: repeat(3, 1fr) !important;
@@ -3017,7 +3014,6 @@ body[data-page="programs"] .grid-2 {
   }
 }
 
-/* programs(1).html | data-page="programs" */
 .elegant-header {
   text-align: left;
   max-width: 650px;
