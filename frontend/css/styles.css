@@ -591,7 +591,7 @@ button {
 }
 
 /* IMPACT PAGE HERO BUTTONS ONLY */
-body[data-page="impact"] .hero-actions{
+body[data-page="impact"] .hero-actions {
   justify-content: center !important;
   transform: translateY(15px);
 }
@@ -4046,26 +4046,21 @@ body[data-page="gallery"] .gallery-item {
   aspect-ratio: 4 / 3 !important;
 }
 
-body[data-page="gallery"] .hero-actions{
+body[data-page="gallery"] .hero-actions {
   justify-content: center !important;
   margin-top: 3rem !important;
 }
 
-body[data-page="gallery"] .hero-actions{
+body[data-page="volunteer"] .hero-actions {
   justify-content: center !important;
   margin-top: 3rem !important;
-}
-
-body[data-page="volunteer"] .hero-actions{
-  justify-content:center !important;
-  margin-top:3rem !important;
 }
 
 /* INTERNSHIP PAGE HERO BUTTONS ONLY */
-body[data-page="internship"] .hero-actions{
-  display:flex !important;
-  justify-content:center !important;
-  margin-top:3rem !important;
+body[data-page="internship"] .hero-actions {
+  display: flex !important;
+  justify-content: center !important;
+  margin-top: 3rem !important;
 }
 
 /* CONTACT PAGE */
@@ -4190,62 +4185,38 @@ body[data-page="refund"] .legal-page h1,
     letter-spacing: .14em !important;
   }
 }
+
 /* Sticky Project Layout */
-
-.project-showcase{
-    display:grid;
-    grid-template-columns:45% 55%;
-    gap:60px;
-    align-items:start;
-    margin:80px 0;
+.project-showcase {
+  display: grid;
+  grid-template-columns: 45% 55%;
+  gap: 60px;
+  align-items: start !important;
+  margin: 80px 0;
 }
 
-.project-image-wrapper{
-    position:sticky;
-    top:120px;
-    align-self:start;
+.project-image-wrapper {
+  position: sticky;
+  top: 120px;
+  align-self: start !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
 
-.project-image-wrapper img{
-    width:100%;
-    border-radius:24px;
-    display:block;
+.project-image-wrapper img {
+  width: 100%;
+  border-radius: 24px;
+  display: block;
 }
 
-.project-content{
-    height:550px;
-    overflow-y:auto;
-    padding-right:15px;
+.project-content {
+  height: 550px;
+  overflow-y: auto;
+  padding-right: 15px;
+  align-self: start !important;
 }
 
-.project-text{
-    line-height:1.9;
-    margin-bottom:20px;
+.project-text {
+  line-height: 1.9;
+  margin-bottom: 20px;
 }
-.project-image-wrapper{
-    margin-top:0 !important;
-    padding-top:0 !important;
-}
-
-.project-content{
-    align-self:start !important;
-}
-.project-showcase{
-    align-items: start !important;
-}
-
-.project-image-wrapper{
-    align-self: start !important;
-    margin-top: 0 !important;
-    position: sticky;
-    top: 120px;
-}
-
-.project-content{
-    align-self: start !important;
-}
-.project-image-wrapper{
-    top: 30px !important;
-}
-
-
