@@ -9,11 +9,13 @@ import {
     deactivateAnnouncement,
     deleteAnnouncement
 } from '../controllers/announcementController.js';
+import { verifyFirebaseToken, requireAdmin } from '../middleware/verifyFirebaseToken.js';
 
 const announcementRouter = express.Router();
+announcementRouter.use(verifyFirebaseToken);
 
 // Create Announcement
-announcementRouter.post('/create', createAnnouncement);
+announcementRouter.post('/create', requireAdmin, createAnnouncement);
 
 // Get All Announcements
 announcementRouter.get('/', getAnnouncements);
@@ -28,12 +30,12 @@ announcementRouter.get('/priority/:priority', getAnnouncementsByPriority);
 announcementRouter.get('/:id', getAnnouncementById);
 
 // Update Announcement
-announcementRouter.put('/:id', updateAnnouncement);
+announcementRouter.put('/:id', requireAdmin, updateAnnouncement);
 
 // Deactivate Announcement
-announcementRouter.patch('/:id/deactivate', deactivateAnnouncement);
+announcementRouter.patch('/:id/deactivate', requireAdmin, deactivateAnnouncement);
 
 // Delete Announcement
-announcementRouter.delete('/:id', deleteAnnouncement);
+announcementRouter.delete('/:id', requireAdmin, deleteAnnouncement);
 
 export default announcementRouter;

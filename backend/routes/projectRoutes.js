@@ -6,11 +6,13 @@ import {
     updateProject,
     deleteProject
 } from '../controllers/projectController.js';
+import { verifyFirebaseToken, requireAdmin } from '../middleware/verifyFirebaseToken.js';
 
 const projectRouter = express.Router();
+projectRouter.use(verifyFirebaseToken);
 
 // Create Project
-projectRouter.post('/create', createProject);
+projectRouter.post('/create', requireAdmin, createProject);
 
 // Get All Projects
 projectRouter.get('/', getProjects);
@@ -19,9 +21,9 @@ projectRouter.get('/', getProjects);
 projectRouter.get('/:id', getProjectById);
 
 // Update Project
-projectRouter.put('/:id', updateProject);
+projectRouter.put('/:id', requireAdmin, updateProject);
 
 // Delete Project
-projectRouter.delete('/:id', deleteProject);
+projectRouter.delete('/:id', requireAdmin, deleteProject);
 
 export default projectRouter;
