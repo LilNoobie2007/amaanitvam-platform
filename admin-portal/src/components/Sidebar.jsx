@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, UserCog, Heart, Award, Globe, LogOut, Shield, Image,BarChart3, Settings as SettingsIcon } from 'lucide-react';
+import { LayoutDashboard, Users, UserCog, Heart, Award, Globe, LogOut, Shield, Image, BarChart3, Settings as SettingsIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import api from '../config/api';
@@ -50,8 +50,8 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2 custom-scrollbar">
+      {/* Navigation (Scrollbar hidden across all major browsers) */}
+      <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {/* OVERVIEW */}
         <p className="px-4 pb-2 text-[10px] font-ui font-bold text-gold/40 uppercase tracking-widest">
           Overview
@@ -96,9 +96,9 @@ export default function Sidebar() {
               Gallery Images
             </NavLink>
             <NavLink to="/reports" className={navLinkClass}>
-  <BarChart3 className="w-[18px] h-[18px] opacity-70" />
-  Reports
-</NavLink>
+              <BarChart3 className="w-[18px] h-[18px] opacity-70" />
+              Reports
+            </NavLink>
             <NavLink to="/settings" className={navLinkClass}>
               <SettingsIcon className="w-[18px] h-[18px] opacity-70" />
               System Settings
