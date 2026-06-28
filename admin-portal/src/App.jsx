@@ -15,6 +15,7 @@ import MyCertificates from './pages/MyCertificates';
 import Settings from './pages/Settings';
 import CMS from './pages/CMS';
 import Reports from "./pages/Reports";
+import Profile from './pages/Profile';
 
 export default function App() {
   return (
@@ -146,6 +147,16 @@ export default function App() {
           <ProtectedRoute>
             <AdminLayout>
               <CMS />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <Profile />
             </AdminLayout>
           </ProtectedRoute>
         }

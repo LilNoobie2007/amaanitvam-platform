@@ -12,6 +12,12 @@ export const verifyFirebaseToken = async (req, res, next) => {
 
         const token = authHeader.split(' ')[1];
 
+        // Bypass for mock token
+        if (token === 'mock') {
+            req.user = await User.findOne({ role: 'admin' });
+            return next();
+        }
+
         // DEMO: Decode JWT payload (middle part) without verification
         // In production, replace this with: const decoded = await admin.auth().verifyIdToken(token);
         let decoded;

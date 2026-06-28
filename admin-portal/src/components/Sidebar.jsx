@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, UserCog, Heart, Award, Globe, LogOut, Shield, Image, BarChart3, Settings as SettingsIcon } from 'lucide-react';
+import { LayoutDashboard, Users, UserCog, Heart, Award, Globe, LogOut, Shield, Image, BarChart3, Settings as SettingsIcon, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import api from '../config/api';
@@ -126,6 +126,15 @@ export default function Sidebar() {
             </NavLink>
           </>
         )}
+
+        {/* ACCOUNT */}
+        <p className="inline-block px-4 pt-6 mb-[0.85rem] text-[0.82rem] font-ui font-bold text-[var(--gold-dark,#B8860B)] uppercase tracking-[0.18em]">
+          Account
+        </p>
+        <NavLink to="/profile" className={navLinkClass}>
+          <User className="w-4.5 h-4.5" />
+          <span className="font-ui">My Profile</span>
+        </NavLink>
       </nav>
 
       {/* Footer — User Info */}

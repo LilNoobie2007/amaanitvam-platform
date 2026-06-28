@@ -33,7 +33,7 @@ const [editMember, setEditMember] = useState({
   const fetchMembers = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/admin/members');
+      const res = await api.get(`/admin/members?t=${new Date().getTime()}`);
       setMembers(res.data.members || res.data || []);
     } catch (err) {
       toast.error('Failed to load members');
@@ -89,6 +89,7 @@ const [editMember, setEditMember] = useState({
     try {
       await api.put(`/admin/members/${id}/role`, { role: newRole });
       toast.success('Role updated successfully!');
+      setMembers(members => members.map(m => (m._id === id || m.id === id) ? { ...m, role: newRole } : m));
       fetchMembers();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update role');
@@ -161,6 +162,7 @@ const [editMember, setEditMember] = useState({
       admin: 'bg-indigo-50 text-indigo-700',
       member: 'bg-blue-50 text-blue-700',
       intern: 'bg-slate-100 text-slate-600',
+      volunteer: 'bg-amber-50 text-amber-700',
     };
     const label = role?.replace('_', ' ');
     return (
@@ -253,6 +255,7 @@ const [editMember, setEditMember] = useState({
                             <option value="intern">Intern</option>
                             <option value="member">Member</option>
                             <option value="admin">Admin</option>
+                            <option value="volunteer">Volunteer</option>
                           </select>
                           <button
   onClick={() => {
@@ -356,6 +359,7 @@ const [editMember, setEditMember] = useState({
                   <option value="intern">Intern</option>
                   <option value="member">Member</option>
                   <option value="admin">Admin</option>
+                            <option value="volunteer">Volunteer</option>
                 </select>
               </div>
               <div>
@@ -482,6 +486,7 @@ const [editMember, setEditMember] = useState({
             <option value="intern">Intern</option>
             <option value="member">Member</option>
             <option value="admin">Admin</option>
+                            <option value="volunteer">Volunteer</option>
           </select>
         </div>
 
