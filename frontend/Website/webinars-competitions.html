@@ -10,8 +10,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght=400;500;600;700&family=Inter:wght=400;500;600;700&family=Montserrat:wght=400;500;600;700;800&display=swap"
     rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet" />
   <link href="assets/images/logo.jpg" rel="icon" type="image/jpg" />
   <link href="assets/css/styles.css" rel="stylesheet" />
@@ -26,7 +25,8 @@
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
       gap: 3.5rem;
-      align-items: stretch; /* Crucial: Forces equal height on both column cells */
+      align-items: stretch;
+      /* Crucial: Forces equal height on both column cells */
     }
 
     /* ── Perfectly Bound Left Gallery Card ── */
@@ -34,7 +34,8 @@
       position: relative;
       width: 100%;
       height: 100%;
-      min-height: 0; /* Prevents cell stretching from image content */
+      min-height: 0;
+      /* Prevents cell stretching from image content */
     }
 
     .left-gallery-card {
@@ -52,7 +53,7 @@
 
       /* Grid layout to match image {CD2047D0-223E-4AEA-9734-7ED243C77524}.png */
       display: grid;
-      grid-template-rows: 1.2fr 1fr; 
+      grid-template-rows: 1.2fr 1fr;
       gap: 1.25rem;
     }
 
@@ -66,7 +67,7 @@
     .bottom-snapshots-row {
       min-height: 0;
       display: grid;
-      grid-template-columns: 1fr 1fr; 
+      grid-template-columns: 1fr 1fr;
       gap: 1.25rem;
       width: 100%;
     }
@@ -94,7 +95,7 @@
       width: 100%;
       height: 100%;
       display: block;
-      object-fit: cover; 
+      object-fit: cover;
     }
 
     /* Responsive fallbacks */
@@ -104,10 +105,12 @@
         gap: 3rem;
         align-items: start;
       }
+
       .left-gallery-card-wrapper {
         height: auto;
         min-height: 450px;
       }
+
       .left-gallery-card {
         position: relative;
         height: 100%;
@@ -116,8 +119,9 @@
 
     @media (max-width: 576px) {
       .bottom-snapshots-row {
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
       }
+
       .left-gallery-card-wrapper {
         min-height: 600px;
       }
@@ -251,14 +255,16 @@
               About Us
               <span aria-hidden="true" class="nav-chevron">
                 <svg fill="none" height="7" viewbox="0 0 12 7" width="12">
-                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path>
+                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="1.6"></path>
                 </svg>
               </span>
             </button>
             <div class="dropdown-menu" role="menu">
               <a class="dropdown-item" href="about.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">info</span></span>
-                <span class="dropdown-text"><strong>About Foundation</strong><small>Our story &amp; values</small></span>
+                <span class="dropdown-text"><strong>About Foundation</strong><small>Our story &amp;
+                    values</small></span>
               </a>
               <a class="dropdown-item" href="impact.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">bar_chart</span></span>
@@ -266,7 +272,8 @@
               </a>
               <a class="dropdown-item" href="programs.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">apps</span></span>
-                <span class="dropdown-text"><strong>Programs</strong><small>Our initiatives &amp; impact areas</small></span>
+                <span class="dropdown-text"><strong>Programs</strong><small>Our initiatives &amp; impact
+                    areas</small></span>
               </a>
               <a class="dropdown-item" href="gallery.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">photo_library</span></span>
@@ -279,7 +286,8 @@
               Get Involved
               <span aria-hidden="true" class="nav-chevron">
                 <svg fill="none" height="7" viewbox="0 0 12 7" width="12">
-                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path>
+                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="1.6"></path>
                 </svg>
               </span>
             </button>
@@ -303,7 +311,8 @@
               Resources
               <span aria-hidden="true" class="nav-chevron">
                 <svg fill="none" height="7" viewbox="0 0 12 7" width="12">
-                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path>
+                  <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="1.6"></path>
                 </svg>
               </span>
             </button>
@@ -318,15 +327,18 @@
               </a>
               <a class="dropdown-item" href="verify.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">verified</span></span>
-                <span class="dropdown-text"><strong>Verify certificates</strong><small>Check your certificate</small></span>
+                <span class="dropdown-text"><strong>Verify certificates</strong><small>Check your
+                    certificate</small></span>
               </a>
               <a class="dropdown-item" href="webinars-competitions.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">event</span></span>
-                <span class="dropdown-text"><strong>Webinar &amp; competitions</strong><small>Join events and participate</small></span>
+                <span class="dropdown-text"><strong>Webinar &amp; competitions</strong><small>Join events and
+                    participate</small></span>
               </a>
               <a class="dropdown-item" href="collaborations.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">diversity_3</span></span>
-                <span class="dropdown-text"><strong>Collaboration &amp; partnership</strong><small>Our partners</small></span>
+                <span class="dropdown-text"><strong>Collaboration &amp; partnership</strong><small>Our
+                    partners</small></span>
               </a>
               <a class="dropdown-item" href="faq.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">help</span></span>
@@ -391,9 +403,11 @@
     <div class="container" style="display: flex; justify-content: center; text-align: center; width: 100%;">
       <div style="max-width: 960px;">
         <span class="hero-label section-label" style="color: var(--gold, #d8a15f);">Resources</span>
-        <h1 class="section-title" style="font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 1rem; color: #ffffff !important;">
+        <h1 class="section-title"
+          style="font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 1rem; color: #ffffff !important;">
           Official Webinars</h1>
-        <p class="section-desc" style="max-width: 750px; margin: 0 auto; color: #ffffff; opacity: 0.95; font-size: 1.2rem;">
+        <p class="section-desc"
+          style="max-width: 750px; margin: 0 auto; color: #ffffff; opacity: 0.95; font-size: 1.2rem;">
           Interactive sessions, expert deep dives, and leadership panels hosted by Amaanitvam Foundation.
         </p>
       </div>
@@ -410,7 +424,7 @@
               <img alt="नारी शक्ति: Dharma, Samman aur Vikas Poster" src="assets/images/Webinar1.jpeg" />
             </div>
           </div>
-          
+
           <div class="bottom-snapshots-row">
             <div class="snapshot-card">
               <img alt="Webinar Interactive View 1" src="assets/images/Webinar2.jpeg" />
@@ -446,7 +460,8 @@
           </div>
 
           <p class="webinar-description-text">
-            An impactful interactive leadership session centered on cultivating core framework capabilities, driving social self-confidence paradigms, and defining next-generation educational opportunity pipelines.
+            An impactful interactive leadership session centered on cultivating core framework capabilities, driving
+            social self-confidence paradigms, and defining next-generation educational opportunity pipelines.
           </p>
         </div>
 
@@ -460,7 +475,8 @@
   <a class="floating-donate" href="contact.html#donate">❤ Donate Now</a>
 
   <div class="floating-socials">
-    <a aria-label="Facebook" href="https://www.facebook.com/people/Amaanitvam-Foundation/61583427622759/" target="_blank">
+    <a aria-label="Facebook" href="https://www.facebook.com/people/Amaanitvam-Foundation/61583427622759/"
+      target="_blank">
       <i class="fa-brands fa-facebook-f"></i>
     </a>
     <a aria-label="Instagram" href="https://www.instagram.com/amaanitvamfoundation" target="_blank">

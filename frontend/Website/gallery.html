@@ -140,15 +140,18 @@
               </a>
               <a class="dropdown-item" href="verify.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">verified</span></span>
-                <span class="dropdown-text"><strong>Verify certificates</strong><small>Check your certificate</small></span>
+                <span class="dropdown-text"><strong>Verify certificates</strong><small>Check your
+                    certificate</small></span>
               </a>
               <a class="dropdown-item" href="webinars-competitions.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">event</span></span>
-                <span class="dropdown-text"><strong>Webinar &amp; competitions</strong><small>Join events and participate</small></span>
+                <span class="dropdown-text"><strong>Webinar &amp; competitions</strong><small>Join events and
+                    participate</small></span>
               </a>
               <a class="dropdown-item" href="collaborations.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">diversity_3</span></span>
-                <span class="dropdown-text"><strong>Collaboration &amp; partnership</strong><small>Our partners</small></span>
+                <span class="dropdown-text"><strong>Collaboration &amp; partnership</strong><small>Our
+                    partners</small></span>
               </a>
               <a class="dropdown-item" href="faq.html" role="menuitem">
                 <span class="dropdown-icon"><span class="material-symbols-outlined">help</span></span>
@@ -242,14 +245,16 @@
         </div>
         <div class="gallery-grid" id="gallery-container">
           <!-- Dynamic images will be loaded here via JS -->
-          <p id="gallery-loading" style="text-align: center; grid-column: 1 / -1; color: var(--text-muted); padding: 3rem;">Loading gallery images...</p>
+          <p id="gallery-loading"
+            style="text-align: center; grid-column: 1 / -1; color: var(--text-muted); padding: 3rem;">Loading gallery
+            images...</p>
         </div>
       </div>
     </section>
   </main>
 
   <script>
-    const BACKEND_URL = window.location.hostname.includes('github.dev') 
+    const BACKEND_URL = window.location.hostname.includes('github.dev')
       ? window.location.origin.replace(/-\d+\.github\.dev/, '-5000.github.dev')
       : "http://localhost:5000";
 
@@ -258,7 +263,7 @@
       try {
         const response = await fetch(`${BACKEND_URL}/api/gallery`);
         const data = await response.json();
-        
+
         if (data.success && data.images && data.images.length > 0) {
           container.innerHTML = data.images.map(img => `
             <figure class="gallery-item" style="content-visibility: auto; contain-intrinsic-size: 1px 280px; background: #f0f0f0;">
@@ -279,8 +284,8 @@
 
     document.addEventListener('DOMContentLoaded', loadGalleryImages);
   </script>
-      </div>
-    </section>
+  </div>
+  </section>
   </main>
 
   <div id="footer"></div>
