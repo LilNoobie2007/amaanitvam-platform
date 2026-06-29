@@ -4355,8 +4355,7 @@ body[data-page="refund"] .legal-page h1,
     width: 100% !important;
     max-width: 1280px !important;
     margin: 0 auto !important;
-    padding: 4rem 2rem !important;
-
+    padding: 2rem 2rem !important;
     display: grid !important;
     grid-template-columns: 1.4fr 1fr 1fr 1.3fr !important;
     gap: 3rem !important;
@@ -4367,13 +4366,16 @@ body[data-page="refund"] .legal-page h1,
     width: 100% !important;
     max-width: 1280px !important;
     margin: 0 auto !important;
-    padding: 1.5rem 2rem !important;
+    padding: 1rem 2rem !important;
 }
 
-/* Mobile */
 @media (max-width: 992px) {
     .footer-container {
         grid-template-columns: 1fr !important;
         gap: 2rem !important;
+        padding: 1.5rem 1rem !important;
+    }
+    .footer-bottom {
+        padding: 1rem 1rem !important;
     }
 }
