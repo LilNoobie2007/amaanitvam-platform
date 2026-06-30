@@ -95,7 +95,7 @@ router.post(
 ); router.put( "/campaigns/:id", requireAdmin, requireAllowedIP, updateCampaign ); router.delete( "/campaigns/:id", requireAdmin, requireAllowedIP, deleteCampaign );
 
 router.get('/certificates', requireAdmin, requireAllowedIP, getCertificates);
-router.post('/certificates', requireAdmin, requireAllowedIP, generateCertificate);
+
 router.put('/certificates/:id/revoke', requireAdmin, requireAllowedIP, revokeCertificate);
 router.get(
   "/certificates/:id/download",
@@ -152,7 +152,7 @@ const certificateUpload = multer({
       cb(new Error('Only PDF certificate files are allowed.'));
     }
   },
-});
+}); router.post('/certificates', requireAdmin, requireAllowedIP, certificateUpload.single('certificate'), generateCertificate);
 
 router.put(
   '/certificates/:id/file',

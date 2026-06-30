@@ -362,28 +362,98 @@ export const uploadCertificateFile = async (req, res) => {
 
 // POST /api/admin/certificates
 export const generateCertificate = async (req, res) => {
-    try {
-        const { issuedTo, email, type, domain } = req.body;
+  try {
+    const {
+      issuedTo,
+      email,
+      phone,
+      type = 'Internship',
+      domain,
+      duration,
+      startDate,
+      endDate,
+      issueDate,
+      isValid,
+    } = req.body;
 
-        const count = await Certificate.countDocuments();
-        const year = new Date().getFullYear();
-        const certificateId = `AF-${year}-${String(count + 1).padStart(3, '0')}`;
-
-        const certificate = new Certificate({ certificateId, issuedTo, email, type, domain });
-        await certificate.save();
-
-        await AuditLog.create({
-            userId: req.user._id,
-            action: 'generate_certificate',
-            details: `Generated ${type} certificate for ${issuedTo} (${email})`,
-            ipAddress: req.ip
-        });
-
-        res.status(201).json({ success: true, certificate });
-    } catch (error) {
-        console.error('Generate certificate error:', error);
-        res.status(500).json({ success: false, message: 'Failed to generate certificate.' });
+    if (!issuedTo?.trim()) {
+      return res.status(400).json({ success: false, message: 'Intern name is required.' });
     }
+    if (!email?.trim()) {
+      return res.status(400).json({ success: false, message: 'Intern email is required.' });
+    }
+    if (!domain?.trim()) {
+      return res.status(400).json({ success: false, message: 'Internship domain is required.' });
+    }
+    if (!['Internship', 'Volunteer', 'Appreciation', 'Achievement'].includes(type)) {
+      return res.status(400).json({ success: false, message: 'Invalid certificate type.' });
+    }
+    if (req.file && req.file.mimetype !== 'application/pdf') {
+      return res.status(400).json({ success: false, message: 'Only PDF certificate files are allowed.' });
+    }
+
+    const year = new Date().getFullYear();
+    const existingCount = await Certificate.countDocuments({
+      certificateId: { $regex: `^AF-${year}-` },
+    });
+
+    let certificateId;
+    for (let attempt = 1; attempt <= 100; attempt += 1) {
+      const serial = String(existingCount + attempt).padStart(4, '0');
+      const candidateId = `AF-${year}-${serial}`;
+      const exists = await Certificate.exists({ certificateId: candidateId });
+      if (!exists) {
+        certificateId = candidateId;
+        break;
+      }
+    }
+
+    if (!certificateId) {
+      certificateId = `AF-${year}-${Date.now().toString().slice(-6)}`;
+    }
+
+    const certificateData = {
+      certificateId,
+      issuedTo: issuedTo.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone?.trim() || '',
+      type,
+      domain: domain.trim(),
+      duration: duration?.trim() || '',
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+      issueDate: issueDate || new Date(),
+      isValid: isValid === false || isValid === 'false' ? false : true,
+    };
+
+    if (req.file) {
+      certificateData.pdfBuffer = req.file.buffer;
+      certificateData.pdfContentType = req.file.mimetype;
+      certificateData.pdfOriginalName = req.file.originalname;
+      certificateData.pdfUploadedAt = new Date();
+    }
+
+    const certificate = new Certificate(certificateData);
+    await certificate.save();
+
+    await AuditLog.create({
+      userId: req.user._id,
+      action: 'generate_certificate',
+      details: `Generated ${type} certificate ${certificate.certificateId} for ${issuedTo} (${email})`,
+      ipAddress: req.ip,
+    });
+
+    const safeCertificate = certificate.toObject();
+    delete safeCertificate.pdfBuffer;
+
+    res.status(201).json({ success: true, certificate: safeCertificate });
+  } catch (error) {
+    console.error('Generate certificate error:', error);
+    if (error.code === 11000) {
+      return res.status(409).json({ success: false, message: 'Certificate ID already exists. Please try again.' });
+    }
+    res.status(500).json({ success: false, message: error.message || 'Failed to generate certificate.' });
+  }
 };
 
 // PUT /api/admin/certificates/:id/revoke
