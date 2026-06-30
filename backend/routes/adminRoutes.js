@@ -7,8 +7,8 @@ import {
     createCampaign
 } from "../controllers/campaignController.js";
 import {
-    updateProfile,
     getMe,
+    updateMe,
     getDashboardStats,
     getCandidates,
     updateCandidateStatus,
@@ -27,7 +27,7 @@ import {
     getSettings,
     updateSettings,
     getAuditLogs
-} from '../controllers/adminController.js'; 
+} from '../controllers/adminController.js';
 
 const router = express.Router();
 
@@ -59,7 +59,7 @@ router.get('/seed', async (req, res) => {
 router.use(verifyFirebaseToken);
 
 router.get('/me', getMe);
-router.post('/update-profile', updateProfile);
+router.put('/me', updateMe);
 router.get('/stats', requireAdmin, requireAllowedIP, getDashboardStats);
 router.get(
   "/reports",
