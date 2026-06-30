@@ -516,9 +516,9 @@ button {
   padding-top: var(--nav-h);
   position: relative;
   overflow: hidden;
-  background-image: url("../images/hero.jpg");
+  background-image: url("../images/hero.jpg") !important;
   background-size: cover;
-  background-position: center 70% !important;
+  background-position: center 35% !important;
   background-repeat: no-repeat;
 }
 
@@ -692,7 +692,7 @@ body[data-page="about"] .page-hero.has-image {
 }
 
 .collab-hero {
-  background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)), url("../images/hero.png");
+  background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)), url("../images/heroo.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -2793,7 +2793,7 @@ body[data-page="collaborations"] .partnership-box p {
 
 .moved-inline-style-002 {
   position: relative;
-  background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)), url("../images/about-hero.png");
+  background-image: linear-gradient(135deg, rgba(86, 5, 26, 0.88), rgba(86, 5, 26, 0.6)), url("../images/about-heroo.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -3590,8 +3590,10 @@ main>.section {
 
 body[data-page="home"] .home-hero,
 body:not([data-page]) .home-hero {
+  background-image: url("../images/hero.jpg") !important;
   background-size: cover !important;
-  background-position: center 85% !important;
+  background-position: center 35% !important;
+  background-repeat: no-repeat !important;
 }
 
 body[data-page="home"] .hero-grid>div,
@@ -6492,4 +6494,90 @@ body[data-page="faq"] .moved-inline-style-077 {
 .moved-inline-style-final-033 {
   width: 100%;
   text-align: center;
+}
+
+
+/* =====================================================
+   GLOBAL PAGE HEADER IMAGE FIX
+   Applies heroo.png to all non-home page headers from CSS only.
+   Image location expected: frontend/Website/assets/images/heroo.png
+   CSS file expected inside: frontend/Website/assets/css/ or frontend/Website/css/
+   ===================================================== */
+
+.page-hero.has-image,
+.about-hero,
+.impact-hero,
+.programs-hero,
+.gallery-hero,
+.resources-hero,
+.faq-hero,
+.verify-hero,
+.volunteer-hero,
+.internship-hero,
+.privacy-hero,
+.terms-hero,
+.refund-hero,
+.collab-hero,
+.contact-hero,
+body[data-page="about"] .page-hero.has-image,
+body[data-page="impact"] .page-hero.has-image,
+body[data-page="programs"] .page-hero.has-image,
+body[data-page="gallery"] .page-hero.has-image,
+body[data-page="resources"] .page-hero.has-image,
+body[data-page="faq"] .page-hero.has-image,
+body[data-page="verify"] .page-hero.has-image,
+body[data-page="volunteer"] .page-hero.has-image,
+body[data-page="internship"] .page-hero.has-image,
+body[data-page="collaborations"] .page-hero.has-image,
+body[data-page="contact"] .page-hero.has-image,
+body[data-page="contact"] .contact-hero,
+.moved-inline-style-final-029 {
+  position: relative !important;
+  overflow: hidden !important;
+  background-color: var(--primary) !important;
+  background-image:
+    linear-gradient(135deg, rgba(86, 5, 26, 0.84), rgba(86, 5, 26, 0.62)),
+    url("../images/heroo.png") !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  color: #ffffff !important;
+}
+
+.page-hero.has-image .container,
+.contact-hero .container,
+.collab-hero .container,
+.moved-inline-style-final-029 .container {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.page-hero.has-image .section-label,
+.page-hero.has-image .section-title,
+.page-hero.has-image .section-desc,
+.page-hero.has-image h1,
+.page-hero.has-image p,
+.contact-hero .section-label,
+.contact-hero .section-title,
+.contact-hero .section-desc,
+.collab-hero .hero-label,
+.collab-hero h1,
+.collab-hero p,
+.moved-inline-style-final-029 .section-label,
+.moved-inline-style-final-029 .section-title,
+.moved-inline-style-final-029 .section-desc,
+.moved-inline-style-final-029 h1,
+.moved-inline-style-final-029 p {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: 0 3px 14px rgba(0, 0, 0, 0.35) !important;
+}
+
+.page-hero.has-image .section-label,
+.contact-hero .section-label,
+.collab-hero .hero-label,
+.moved-inline-style-final-029 .section-label {
+  color: var(--gold) !important;
+  -webkit-text-fill-color: var(--gold) !important;
 }
