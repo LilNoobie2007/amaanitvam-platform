@@ -6153,3 +6153,13 @@ body[data-page="faq"] .moved-inline-style-077 {
     font-size: 1rem !important;
   }
 }
+
+.card a[href^="https://mail.google.com"] {
+  color: var(--primary) !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.card a[href^="https://mail.google.com"]:hover {
+  color: var(--gold) !important;
+}
