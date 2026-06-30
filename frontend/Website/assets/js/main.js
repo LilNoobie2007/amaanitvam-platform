@@ -2864,3 +2864,338 @@ document.addEventListener('DOMContentLoaded', function () {
       .catch(function (error) { console.error('Footer load error:', error); });
   }
 });
+
+// ===== Donation Campaign Logic: START =====
+(function () {
+  'use strict';
+
+  const MIN_AMOUNT = 10;
+  let selectedAmount = 0;
+  let selectedCampaignId = 'organization';
+  let activeCampaigns = [];
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  function formatCurrency(value) {
+    return `₹${Number(value || 0).toLocaleString('en-IN')}`;
+  }
+
+  function getApiBases() {
+    const bases = [];
+    if (window.DONATION_API_BASE) bases.push(window.DONATION_API_BASE);
+    if (document.body?.dataset?.apiBase) bases.push(document.body.dataset.apiBase);
+    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+      bases.push(`${window.location.origin}/api`);
+    }
+    bases.push('http://localhost:5001/api');
+    bases.push('http://localhost:5000/api');
+    return [...new Set(bases.filter(Boolean).map((base) => base.replace(/\/$/, '')))];
+  }
+
+  async function apiFetch(path, options = {}) {
+    let lastError;
+    for (const base of getApiBases()) {
+      try {
+        const response = await fetch(`${base}${path}`, options);
+        const text = await response.text();
+        let data = {};
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch (_) {
+          data = { message: text };
+        }
+
+        if (!response.ok) {
+          if ([404, 405].includes(response.status)) {
+            lastError = new Error(data.message || `Request failed on ${base}`);
+            continue;
+          }
+          throw new Error(data.message || 'Request failed');
+        }
+
+        return data;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    throw lastError || new Error('Backend API is not reachable');
+  }
+
+  function injectStyles() {
+    if (document.getElementById('campaign-donation-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'campaign-donation-styles';
+    style.textContent = `
+      #campaignDonationSelector { margin: 18px 0; padding: 16px; border: 1px solid rgba(86,5,26,.14); border-radius: 18px; background: #fffaf7; }
+      #campaignDonationSelector .campaign-title { font-weight: 800; color: #2f1720; margin-bottom: 4px; }
+      #campaignDonationSelector .campaign-subtitle { color: #6b5b55; font-size: 14px; margin-bottom: 12px; }
+      #campaignDonationSelector .campaign-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+      #campaignDonationSelector .campaign-option { cursor: pointer; border: 1px solid #ead8c7; border-radius: 14px; background: #fff; padding: 12px; transition: .2s ease; display: block; }
+      #campaignDonationSelector .campaign-option:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(86,5,26,.08); }
+      #campaignDonationSelector .campaign-option.is-selected { border-color: #56051a; box-shadow: 0 0 0 3px rgba(86,5,26,.08); }
+      #campaignDonationSelector .campaign-option input { margin-right: 8px; }
+      #campaignDonationSelector .campaign-name { font-weight: 700; color: #35131f; }
+      #campaignDonationSelector .campaign-desc { color: #6b5b55; font-size: 13px; margin: 6px 0 8px; line-height: 1.35; }
+      #campaignDonationSelector .campaign-progress { height: 7px; border-radius: 999px; overflow: hidden; background: #f3e7dc; margin-top: 8px; }
+      #campaignDonationSelector .campaign-progress span { display: block; height: 100%; background: #56051a; }
+      #campaignDonationSelector .campaign-meta { display: flex; justify-content: space-between; gap: 8px; color: #6b5b55; font-size: 12px; font-weight: 600; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function getOrCreateCampaignContainer(payButton) {
+    let container = document.getElementById('campaignDonationSelector');
+    if (container) return container;
+
+    container = document.createElement('div');
+    container.id = 'campaignDonationSelector';
+
+    const customAmount = document.getElementById('customAmount');
+    const amountArea = customAmount?.closest('div') || document.querySelector('.amount-btn')?.parentElement;
+    const insertBefore = amountArea || payButton.closest('div') || payButton;
+
+    if (insertBefore?.parentNode) insertBefore.parentNode.insertBefore(container, insertBefore);
+    else payButton.insertAdjacentElement('beforebegin', container);
+
+    return container;
+  }
+
+  function renderCampaignSelector(container) {
+    const campaignCards = activeCampaigns.map((campaign) => {
+      const raised = Number(campaign.raisedAmount || 0);
+      const goal = Number(campaign.goalAmount || 0);
+      const progress = goal > 0 ? Math.min(100, Math.round((raised / goal) * 100)) : 0;
+      const isSelected = selectedCampaignId === campaign._id;
+      return `
+        <label class="campaign-option ${isSelected ? 'is-selected' : ''}">
+          <input type="radio" name="donationTarget" value="${escapeHtml(campaign._id)}" ${isSelected ? 'checked' : ''}>
+          <span class="campaign-name">${escapeHtml(campaign.title)}</span>
+          <div class="campaign-desc">${escapeHtml(campaign.description || 'Support this active campaign.')}</div>
+          <div class="campaign-meta"><span>${formatCurrency(raised)} raised</span><span>${formatCurrency(goal)} goal</span></div>
+          <div class="campaign-progress"><span style="width:${progress}%"></span></div>
+        </label>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <div class="campaign-title">Choose where your donation should go</div>
+      <div class="campaign-subtitle">Donate directly to the organization or select one active campaign.</div>
+      <div class="campaign-options">
+        <label class="campaign-option ${selectedCampaignId === 'organization' ? 'is-selected' : ''}">
+          <input type="radio" name="donationTarget" value="organization" ${selectedCampaignId === 'organization' ? 'checked' : ''}>
+          <span class="campaign-name">Amaanitvam Foundation</span>
+          <div class="campaign-desc">Direct donation to the organization for general foundation work.</div>
+        </label>
+        ${campaignCards || '<div class="campaign-desc">No active campaigns right now. Direct organization donation is available.</div>'}
+      </div>
+    `;
+
+    container.querySelectorAll('input[name="donationTarget"]').forEach((input) => {
+      input.addEventListener('change', () => {
+        selectedCampaignId = input.value || 'organization';
+        container.querySelectorAll('.campaign-option').forEach((card) => card.classList.remove('is-selected'));
+        input.closest('.campaign-option')?.classList.add('is-selected');
+      });
+    });
+  }
+
+  async function loadCampaigns(container) {
+    try {
+      const data = await apiFetch('/donate/campaigns');
+      activeCampaigns = data.campaigns || [];
+    } catch (error) {
+      console.warn('Campaign list unavailable:', error);
+      activeCampaigns = [];
+    }
+    renderCampaignSelector(container);
+  }
+
+  function setupAmountSelection() {
+    const amountBtns = Array.from(document.querySelectorAll('.amount-btn'));
+    const customAmountInput = document.getElementById('customAmount');
+
+    const activeBtn = amountBtns.find((btn) => btn.classList.contains('active'));
+    selectedAmount = Number(activeBtn?.dataset?.amount || customAmountInput?.value || 0);
+
+    amountBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        amountBtns.forEach((item) => item.classList.remove('active'));
+        btn.classList.add('active');
+        selectedAmount = Number(btn.dataset.amount || 0);
+        if (customAmountInput) customAmountInput.value = '';
+      });
+    });
+
+    if (customAmountInput) {
+      customAmountInput.addEventListener('input', () => {
+        amountBtns.forEach((item) => item.classList.remove('active'));
+        selectedAmount = Number(customAmountInput.value || 0);
+      });
+    }
+  }
+
+  function setStatus(message, color) {
+    const donateStatus = document.getElementById('donate-status');
+    if (!donateStatus) return;
+    donateStatus.textContent = message;
+    donateStatus.style.color = color || '';
+  }
+
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      if (window.Razorpay) return resolve();
+      const existing = document.querySelector(`script[src="${src}"]`);
+      if (existing) {
+        existing.addEventListener('load', resolve, { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  function resetDonationForm() {
+    ['donorName', 'donorEmail', 'donorPhone'].forEach((id) => {
+      const input = document.getElementById(id);
+      if (input) input.value = '';
+    });
+    const customAmountInput = document.getElementById('customAmount');
+    if (customAmountInput) customAmountInput.value = '';
+    document.querySelectorAll('.amount-btn').forEach((btn) => btn.classList.remove('active'));
+    selectedAmount = 0;
+    selectedCampaignId = 'organization';
+    const container = document.getElementById('campaignDonationSelector');
+    if (container) renderCampaignSelector(container);
+  }
+
+  async function handlePayment(payButton) {
+    const name = document.getElementById('donorName')?.value.trim() || '';
+    const email = document.getElementById('donorEmail')?.value.trim() || '';
+    const phone = document.getElementById('donorPhone')?.value.trim() || '';
+
+    if (!name || !email) {
+      setStatus('Please enter your name and email.', 'red');
+      return;
+    }
+
+    if (selectedAmount < MIN_AMOUNT) {
+      setStatus('Minimum donation amount is ₹10.', 'red');
+      return;
+    }
+
+    const originalText = payButton.textContent;
+    payButton.disabled = true;
+    payButton.textContent = 'Processing...';
+    setStatus('', '');
+
+    try {
+      await loadScript('https://checkout.razorpay.com/v1/checkout.js');
+
+      const campaignId = selectedCampaignId === 'organization' ? null : selectedCampaignId;
+      const data = await apiFetch('/donate/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, amount: selectedAmount, campaignId }),
+      });
+
+      if (!data.success) throw new Error(data.message || 'Failed to create order.');
+
+      const description = data.campaign?.title
+        ? `Donation for ${data.campaign.title}`
+        : 'Donation to Amaanitvam Foundation';
+
+      const options = {
+        key: data.key,
+        amount: data.order.amount,
+        currency: data.order.currency,
+        name: 'Amaanitvam Foundation',
+        description,
+        order_id: data.order.id,
+        prefill: {
+          name: data.donor.name,
+          email: data.donor.email,
+          contact: data.donor.phone,
+        },
+        theme: { color: '#56051a' },
+        modal: {
+          ondismiss: function () {
+            payButton.disabled = false;
+            payButton.textContent = originalText || 'Proceed to Pay Securely';
+          },
+        },
+        handler: async function (paymentResponse) {
+          try {
+            const verifyData = await apiFetch('/donate/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+              }),
+            });
+
+            if (verifyData.success) {
+              setStatus('✅ ' + (verifyData.message || 'Payment successful! Thank you!'), '#22c55e');
+              resetDonationForm();
+              const container = document.getElementById('campaignDonationSelector');
+              if (container) loadCampaigns(container);
+            } else {
+              setStatus(verifyData.message || 'Payment verification failed.', 'red');
+            }
+          } catch (error) {
+            setStatus(error.message || 'Payment verification error. Please contact support.', 'red');
+          } finally {
+            payButton.disabled = false;
+            payButton.textContent = originalText || 'Proceed to Pay Securely';
+          }
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error(error);
+      setStatus(error.message || 'Something went wrong. Please try again.', 'red');
+      payButton.disabled = false;
+      payButton.textContent = originalText || 'Proceed to Pay Securely';
+    }
+  }
+
+  ready(function () {
+    const originalPayButton = document.getElementById('payButton');
+    if (!originalPayButton) return;
+
+    injectStyles();
+    setupAmountSelection();
+
+    const payButton = originalPayButton.cloneNode(true);
+    originalPayButton.replaceWith(payButton);
+
+    const container = getOrCreateCampaignContainer(payButton);
+    renderCampaignSelector(container);
+    loadCampaigns(container);
+
+    payButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      handlePayment(payButton);
+    });
+  });
+})();
+// ===== Donation Campaign Logic: END =====

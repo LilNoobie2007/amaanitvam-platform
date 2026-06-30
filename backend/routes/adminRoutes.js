@@ -2,10 +2,7 @@ import express from 'express';
 import { verifyFirebaseToken, requireAdmin } from '../middleware/verifyFirebaseToken.js';
 import { requireAllowedIP } from '../middleware/ipRestriction.js';
 import User from '../models/user.js';
-import {
-    getCampaigns,
-    createCampaign
-} from "../controllers/campaignController.js";
+import { getCampaigns, createCampaign, updateCampaign, deleteCampaign } from "../controllers/campaignController.js";
 import {
     getMe,
     updateMe,
@@ -61,6 +58,11 @@ router.use(verifyFirebaseToken);
 
 router.get('/me', getMe);
 router.put('/me', updateMe);
+
+// Backward-compatible aliases for older admin portal builds.
+// The previous frontend called /api/admin/update-profile, which caused 404.
+router.post('/update-profile', updateMe);
+router.put('/update-profile', updateMe);
 router.get('/stats', requireAdmin, requireAllowedIP, getDashboardStats);
 router.get(
   "/reports",
@@ -90,7 +92,7 @@ router.post(
     requireAdmin,
     requireAllowedIP,
     createCampaign
-);
+); router.put( "/campaigns/:id", requireAdmin, requireAllowedIP, updateCampaign ); router.delete( "/campaigns/:id", requireAdmin, requireAllowedIP, deleteCampaign );
 
 router.get('/certificates', requireAdmin, requireAllowedIP, getCertificates);
 router.post('/certificates', requireAdmin, requireAllowedIP, generateCertificate);

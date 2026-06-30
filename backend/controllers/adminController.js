@@ -277,7 +277,7 @@ export const deleteMember = async (req, res) => {
 // GET /api/admin/donations
 export const getDonations = async (req, res) => {
     try {
-        const donations = await Donation.find({ status: 'paid' }).sort({ createdAt: -1 });
+        const donations = await Donation.find({ status: 'paid' }).populate('campaign', 'title status goalAmount raisedAmount').sort({ createdAt: -1 });
         const totalAmount = donations.reduce((sum, d) => sum + d.amount, 0);
 
         res.json({ success: true, donations, totalAmount });
@@ -534,71 +534,119 @@ export const getAuditLogs = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to fetch audit logs.' });
     }
 };
+
 // GET /api/admin/reports
 export const getReports = async (req, res) => {
   try {
-    const [
-      members,
-      candidates,
-      donations
-    ] = await Promise.all([
-      User.countDocuments({ status: "active" }),
+    const [users, candidates, donations] = await Promise.all([
+      User.find()
+        .select('name email phone role status department profileImage joinedAt createdAt')
+        .sort({ createdAt: -1 }),
       InternshipApplication.countDocuments(),
       Donation.find().sort({ createdAt: -1 })
     ]);
 
-    const totalDonations = donations.reduce(
-      (sum, d) => sum + (d.amount || 0),
-      0
-    );
+    const roleCounts = users.reduce((acc, user) => {
+      const role = user.role || 'member';
+      acc[role] = (acc[role] || 0) + 1;
+      return acc;
+    }, {});
+
+    const statusCounts = users.reduce((acc, user) => {
+      const status = user.status || 'active';
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+
+    const monthlyMap = users.reduce((acc, user) => {
+      const rawDate = user.createdAt || user.joinedAt;
+      if (!rawDate) return acc;
+
+      const date = new Date(rawDate);
+      if (Number.isNaN(date.getTime())) return acc;
+
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      if (!acc[key]) {
+        acc[key] = {
+          key,
+          month: date.toLocaleString('en-IN', { month: 'short', year: '2-digit' }),
+          members: 0,
+          active: 0
+        };
+      }
+
+      acc[key].members += 1;
+      if ((user.status || 'active') === 'active') acc[key].active += 1;
+      return acc;
+    }, {});
+
+    const growthData = Object.values(monthlyMap)
+      .sort((a, b) => a.key.localeCompare(b.key))
+      .slice(-6)
+      .map(({ key, ...item }) => item);
+
+    const totalDonations = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
 
     res.json({
       success: true,
       reports: {
-        totalMembers: members,
+        totalMembers: users.length,
+        activeMembers: statusCounts.active || 0,
+        inactiveMembers: statusCounts.inactive || 0,
+        admins: roleCounts.admin || 0,
+        interns: roleCounts.intern || 0,
+        volunteers: roleCounts.volunteer || 0,
+        memberRoleCount: roleCounts.member || 0,
+        roleCounts,
+        statusCounts,
+        growthData,
+        recentMembers: users.slice(0, 10),
+
+        // Kept for backwards compatibility with any existing widgets.
         totalCandidates: candidates,
         totalDonations,
         totalTransactions: donations.length
       }
     });
-
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 // PUT /api/admin/me
-// Lets a logged-in user update their own profile (name, phone only).
+// Lets a logged-in user update their own profile.
 // Email is intentionally excluded — even if a client sends "email" in
-// the body, it's never read or applied, so it can't reach the database.
+// the body, it is never read or applied, so it cannot reach the database.
 export const updateMe = async (req, res) => {
   try {
-    const { name, phone } = req.body;
+    const { name, phone, department, profileImage } = req.body;
+
+    if (!name?.trim()) {
+      return res.status(400).json({ success: false, message: 'Name is required' });
+    }
+
+    const updateData = {
+      name: name.trim(),
+      phone: phone?.trim() || '',
+      department: department?.trim() || ''
+    };
+
+    if (typeof profileImage === 'string' && profileImage.startsWith('data:image/')) {
+      updateData.profileImage = profileImage;
+    }
 
     const member = await User.findByIdAndUpdate(
       req.user._id,
-      { name, phone },
+      updateData,
       { new: true, runValidators: true }
     );
 
     if (!member) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    res.json({
-      success: true,
-      user: member
-    });
-
+    res.json({ success: true, user: member });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message
-    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
