@@ -543,13 +543,13 @@ button {
   padding-top: 0;
 }
 
-.hero-grid>div,
+.hero-grid > div,
 .hero-content {
   max-width: 760px;
   margin-left: 55px;
   padding-left: 0 !important;
   text-align: left !important;
-  transform: translateY(45px);
+  transform: translateY(160px) !important; /* sirf ye value badli hai */
 }
 
 .hero-title {
