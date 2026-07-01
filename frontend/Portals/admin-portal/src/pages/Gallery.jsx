@@ -2,6 +2,47 @@ import { useState, useEffect } from 'react';
 import { Image, Upload, Trash2, Loader2, Plus, Eye, X } from 'lucide-react';
 import api from '../config/api';
 
+const MAX_GALLERY_MEDIA_SIZE = 100 * 1024 * 1024;
+const GALLERY_UPLOAD_BATCH_SIZE = 5;
+
+const formatBytes = (bytes) => {
+  if (!bytes) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  return `${(bytes / 1024 ** index).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+};
+
+const chunkFiles = (files, size = GALLERY_UPLOAD_BATCH_SIZE) => {
+  const chunks = [];
+  for (let i = 0; i < files.length; i += size) {
+    chunks.push(files.slice(i, i + size));
+  }
+  return chunks;
+};
+
+const isAllowedGalleryFile = (file) => file?.type?.startsWith('image/') || file?.type?.startsWith('video/');
+const isVideoMedia = (item) => item?.mediaType === 'video' || item?.contentType?.startsWith('video/');
+const getApiBaseUrl = () => (api.defaults.baseURL || '').replace(/\/api\/?$/, '');
+const getMediaSrc = (item) => {
+  if (!item?.imageUrl) return '';
+  if (item.imageUrl.startsWith('http')) return item.imageUrl;
+  return `${getApiBaseUrl()}${item.imageUrl}`;
+};
+
+const validateGalleryFiles = (files) => {
+  const invalidFiles = files.filter((file) => !isAllowedGalleryFile(file));
+  if (invalidFiles.length) {
+    return `Only photo and video files are allowed. Invalid: ${invalidFiles.map((file) => file.name).join(', ')}`;
+  }
+
+  const oversizedFiles = files.filter((file) => file.size > MAX_GALLERY_MEDIA_SIZE);
+  if (oversizedFiles.length) {
+    return `Each file must be 100MB or smaller. Too large: ${oversizedFiles.map((file) => `${file.name} (${formatBytes(file.size)})`).join(', ')}`;
+  }
+
+  return '';
+};
+
 export default function Gallery() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,51 +69,69 @@ export default function Gallery() {
       const { data } = await api.get('/gallery');
       setImages(data.images || []);
     } catch (err) {
-      setError('Failed to load gallery images');
+      setError('Failed to load gallery media');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
-
   const handleFileSelect = (e) => {
-  const files = Array.from(e.target.files || []);
-  setSelectedFiles(files);
-};
+    const files = Array.from(e.target.files || []);
+    const validationError = validateGalleryFiles(files);
 
+    if (validationError) {
+      setError(validationError);
+      setSelectedFiles([]);
+      e.target.value = '';
+      return;
+    }
+
+    setError('');
+    setSelectedFiles(files);
+  };
   const handleUpload = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!selectedFiles.length || !newTitle) {
-    setError('Please provide a title and select at least one image');
-    return;
-  }
+    if (!selectedFiles.length || !newTitle) {
+      setError('Please provide a title and select at least one photo or video');
+      return;
+    }
 
-  setUploading(true);
-  setError('');
+    const validationError = validateGalleryFiles(selectedFiles);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append('title', newTitle);
+    setUploading(true);
+    setError('');
 
-  selectedFiles.forEach((file) => {
-    formData.append('images', file);
-  });
+    try {
+      const batches = chunkFiles(selectedFiles);
 
-  try {
-    await api.post('/admin/gallery/bulk', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+      for (const batch of batches) {
+        const formData = new FormData();
+        formData.append('title', newTitle);
 
-    setIsModalOpen(false);
-    setNewTitle('');
-    setSelectedFiles([]);
-    fetchImages();
-  } catch (err) {
-    setError(err.response?.data?.message || 'Failed to upload images');
-  } finally {
-    setUploading(false);
-  }
-};
+        batch.forEach((file) => {
+          formData.append('media', file);
+        });
+
+        await api.post('/admin/gallery/bulk', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      }
+
+      setIsModalOpen(false);
+      setNewTitle('');
+      setSelectedFiles([]);
+      fetchImages();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to upload gallery media');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleEditClick = (img) => {
     setEditingImage(img);
@@ -80,11 +139,24 @@ export default function Gallery() {
     setEditFile(null);
     setIsEditModalOpen(true);
   };
-
   const handleEditFileSelect = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setEditFile(e.target.files[0]);
+    const file = e.target.files?.[0];
+
+    if (!file) {
+      setEditFile(null);
+      return;
     }
+
+    const validationError = validateGalleryFiles([file]);
+    if (validationError) {
+      setError(validationError);
+      setEditFile(null);
+      e.target.value = '';
+      return;
+    }
+
+    setError('');
+    setEditFile(file);
   };
 
   const handleUpdate = async (e) => {
@@ -115,21 +187,21 @@ export default function Gallery() {
       setEditFile(null);
       fetchImages(); // Refresh the list
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update image');
+      setError(err.response?.data?.message || 'Failed to update gallery media');
     } finally {
       setUploading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this image?')) return;
+    if (!window.confirm('Are you sure you want to delete this gallery media item?')) return;
     
     try {
       await api.delete(`/admin/gallery/${id}`);
       setImages(images.filter(img => img._id !== id));
     } catch (err) {
-      console.error('Failed to delete image', err);
-      alert('Failed to delete image');
+      console.error('Failed to delete gallery media', err);
+      alert('Failed to delete gallery media');
     }
   };
 
@@ -138,14 +210,14 @@ export default function Gallery() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Gallery Management</h1>
-          <p className="text-sm text-slate-500 mt-1">Add or remove images from the main website gallery</p>
+          <p className="text-sm text-slate-500 mt-1">Add or remove photos and videos from the main website gallery</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-4 py-2 bg-[#56051a] hover:bg-[#56051a]/90 text-white rounded-xl font-medium transition-all shadow-sm shadow-[#56051a]/20"
         >
           <Plus className="w-4 h-4" />
-          Add Image
+          Add Media
         </button>
       </div>
 
@@ -164,7 +236,7 @@ export default function Gallery() {
           <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Image className="w-8 h-8 text-slate-400" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900 mb-1">No Images Found</h3>
+          <h3 className="text-lg font-bold text-slate-900 mb-1">No Media Found</h3>
           <p className="text-slate-500">The gallery is currently empty.</p>
         </div>
       ) : (
@@ -172,30 +244,40 @@ export default function Gallery() {
           {images.map((img) => (
             <div key={img._id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden group">
               <div className="aspect-[4/3] relative bg-slate-100">
-                <img 
-                  src={`${api.defaults.baseURL.replace('/api', '')}${img.imageUrl}`} 
-                  alt={img.title} 
-                  className="w-full h-full object-cover"
-                />
+                {isVideoMedia(img) ? (
+            <video
+              src={getMediaSrc(img)}
+              className="w-full h-full object-cover"
+              muted
+              playsInline
+              preload="metadata"
+            />
+          ) : (
+            <img
+              src={getMediaSrc(img)}
+              alt={img.title}
+              className="w-full h-full object-cover"
+            />
+          )}
 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button 
                     onClick={() => setViewingImage(img)}
                     className="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-lg transition-colors"
-                    title="View Image"
+                    title="View Media"
                   >
                     <Eye className="w-5 h-5" />
                   </button>
                   <button 
                     onClick={() => handleEditClick(img)}
                     className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transition-colors"
-                    title="Edit Image"
+                    title="Edit Media"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                   </button>
                   <button 
                     onClick={() => handleDelete(img._id)}
                     className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg transition-colors"
-                    title="Delete Image"
+                    title="Delete Media"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
@@ -225,11 +307,21 @@ export default function Gallery() {
               <X className="w-5 h-5" />
             </button>
             <div className="w-full h-[60vh] bg-slate-100 flex items-center justify-center overflow-hidden">
-              <img 
-                src={`${api.defaults.baseURL.replace('/api', '')}${viewingImage.imageUrl}`} 
-                alt={viewingImage.title} 
-                className="w-full h-full object-contain"
-              />
+              {isVideoMedia(viewingImage) ? (
+            <video
+              src={getMediaSrc(viewingImage)}
+              className="w-full h-full object-contain"
+              controls
+              playsInline
+              preload="metadata"
+            />
+          ) : (
+            <img
+              src={getMediaSrc(viewingImage)}
+              alt={viewingImage.title}
+              className="w-full h-full object-contain"
+            />
+          )}
             </div>
             <div className="p-6 bg-white">
               <h2 className="text-xl font-bold text-slate-900 mb-2">{viewingImage.title}</h2>
@@ -248,7 +340,7 @@ export default function Gallery() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
             <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-slate-900">Add New Image</h2>
+              <h2 className="text-lg font-bold text-slate-900">Add New Media</h2>
               <button 
                 onClick={() => setIsModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600"
@@ -267,7 +359,7 @@ export default function Gallery() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Image Title
+                    Media Title
                   </label>
                   <input
                     type="text"
@@ -281,7 +373,7 @@ export default function Gallery() {
                 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Upload Image
+                    Upload Photos / Videos
                   </label>
                   <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative">
                     <div className="space-y-1 text-center">
@@ -290,22 +382,22 @@ export default function Gallery() {
                         <label htmlFor="gallery-upload" className="relative cursor-pointer rounded-md font-medium text-[#56051a] hover:text-[#56051a]/80 focus-within:outline-none">
                          <span>
   {selectedFiles.length > 0
-    ? `${selectedFiles.length} image(s) selected`
-    : 'Upload one or more images'}
+    ? `${selectedFiles.length} media item(s) selected`
+    : 'Upload one or more photos/videos'}
 </span>
 
 <input
   id="gallery-upload"
   name="gallery-upload"
   type="file"
-  accept="image/*"
+  accept="image/*,video/*"
   multiple
   onChange={handleFileSelect}
   className="sr-only"
 />
                         </label>
                       </div>
-                      <p className="text-xs text-slate-500">PNG, JPG, GIF up to 5MB</p>
+                      <p className="text-xs text-slate-500">Photos/videos up to 100MB each. Uploads are sent in batches of 5.</p>
                     </div>
                   </div>
                 </div>
@@ -326,7 +418,7 @@ export default function Gallery() {
                   className="flex items-center gap-2 px-4 py-2 bg-[#56051a] text-white text-sm font-medium rounded-xl hover:bg-[#56051a]/90 disabled:opacity-50 transition-colors"
                 >
                   {uploading && <Loader2 className="w-4 h-4 animate-spin" />}
-                 {uploading ? 'Uploading...' : selectedFiles.length > 1 ? 'Save Images' : 'Save Image'}
+                 {uploading ? 'Uploading...' : selectedFiles.length > 1 ? 'Save Media' : 'Save Media'}
                 </button>
               </div>
             </form>
@@ -338,7 +430,7 @@ export default function Gallery() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
             <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-slate-900">Edit Image</h2>
+              <h2 className="text-lg font-bold text-slate-900">Edit Media</h2>
               <button 
                 onClick={() => setIsEditModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600"
@@ -357,7 +449,7 @@ export default function Gallery() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Image Title
+                    Media Title
                   </label>
                   <input
                     type="text"
@@ -371,7 +463,7 @@ export default function Gallery() {
                 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Upload New Image (Optional)
+                    Upload New Photo/Video (Optional)
                   </label>
                   <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative">
                     <div className="space-y-1 text-center">
@@ -384,12 +476,12 @@ export default function Gallery() {
                             name="edit-file-upload" 
                             type="file" 
                             className="sr-only" 
-                            accept="image/*"
+                            accept="image/*,video/*"
                             onChange={handleEditFileSelect}
                           />
                         </label>
                       </div>
-                      <p className="text-xs text-slate-500">Leave empty to keep current image</p>
+                      <p className="text-xs text-slate-500">Leave empty to keep current media</p>
                     </div>
                   </div>
                 </div>

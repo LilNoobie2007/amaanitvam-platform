@@ -1,94 +1,102 @@
-    import express from 'express';
-    import Gallery from '../models/gallery.js';
-    import fs from 'fs';
-    import path from 'path';
-    import { fileURLToPath } from 'url';
-    
-    const __filenameGallery = fileURLToPath(import.meta.url);
-    const __dirnameGallery = path.dirname(__filenameGallery);
-    
-    const router = express.Router();
-    
-    router.get('/', async (req, res) => {
-        try {
-            const images = await Gallery.find().sort({ createdAt: -1 });
-            const mappedImages = images.map(img => ({
-                ...img.toObject(),
-                imageUrl: img.imageUrl.replace('/uploads/', '/api/gallery/images/')
-            }));
-            res.status(200).json({ success: true, images: mappedImages });
-        } catch (error) {
-            res.status(500).json({ success: false, message: 'Server error fetching gallery.' });
-        }
-    });
+import express from 'express';
+import mongoose from 'mongoose';
+import { GridFSBucket, ObjectId } from 'mongodb';
+import Gallery from '../models/gallery.js';
 
-    router.get('/images/:filename', async (req, res) => {
-        try {
-            const apiSearch = `/api/gallery/images/${req.params.filename}`;
-            const uploadSearch = `/uploads/${req.params.filename}`;
-            const imageInDb = await Gallery.findOne({ 
-                $or: [{ imageUrl: apiSearch }, { imageUrl: uploadSearch }] 
-            });
-            
-            if (imageInDb && imageInDb.imageBuffer) {
-                res.set('Content-Type', imageInDb.contentType || 'image/jpeg');
-                return res.send(imageInDb.imageBuffer);
-            }
-            
-            const filePath = path.join(__dirnameGallery, '../uploads', req.params.filename);
-            if (fs.existsSync(filePath)) {
-                res.sendFile(filePath);
-            } else {
-                res.status(404).json({ success: false, message: 'Image not found' });
-            }
-        } catch (error) {
-            res.status(500).json({ success: false, message: 'Server error' });
+const router = express.Router();
+const BUCKET_NAME = 'galleryMedia';
+
+const getBucket = () => new GridFSBucket(mongoose.connection.db, { bucketName: BUCKET_NAME });
+const getGalleryMediaUrl = (id) => `/api/gallery/media/${id}`;
+
+const serializeGalleryItem = (item) => {
+  const doc = item.toObject ? item.toObject() : item;
+  delete doc.imageBuffer;
+  return {
+    ...doc,
+    imageUrl: getGalleryMediaUrl(doc._id),
+  };
+};
+
+router.get('/', async (req, res) => {
+  try {
+    const images = await Gallery.find().sort({ createdAt: -1 });
+    res.status(200).json({ success: true, images: images.map(serializeGalleryItem) });
+  } catch (error) {
+    console.error('Gallery fetch error:', error);
+    res.status(500).json({ success: false, message: 'Server error fetching gallery.' });
+  }
+});
+
+const streamGalleryMedia = async (req, res) => {
+  try {
+    const media = await Gallery.findById(req.params.id);
+
+    if (!media) {
+      return res.status(404).json({ success: false, message: 'Media not found' });
+    }
+
+    res.set('Content-Type', media.contentType || 'application/octet-stream');
+    res.set('Content-Disposition', `inline; filename="${encodeURIComponent(media.originalName || media.title || 'gallery-media')}"`);
+    res.set('Cache-Control', 'public, max-age=31536000, immutable');
+    res.set('Accept-Ranges', 'bytes');
+
+    if (media.fileId) {
+      const fileObjectId = media.fileId instanceof ObjectId ? media.fileId : new ObjectId(media.fileId);
+      const fileDoc = await mongoose.connection.db
+        .collection(`${BUCKET_NAME}.files`)
+        .findOne({ _id: fileObjectId });
+
+      if (!fileDoc) {
+        return res.status(404).json({ success: false, message: 'Media file not found in MongoDB' });
+      }
+
+      const totalSize = fileDoc.length;
+      const range = req.headers.range;
+
+      if (range) {
+        const match = range.match(/bytes=(\d*)-(\d*)/);
+        const start = match?.[1] ? Number.parseInt(match[1], 10) : 0;
+        const end = match?.[2] ? Math.min(Number.parseInt(match[2], 10), totalSize - 1) : totalSize - 1;
+
+        if (Number.isNaN(start) || Number.isNaN(end) || start > end || start >= totalSize) {
+          res.set('Content-Range', `bytes */${totalSize}`);
+          return res.status(416).end();
         }
-    });
-    
-    router.get('/seed', async (req, res) => {
-        try {
-            const sourceDir = path.join(__dirnameGallery, '../../frontend/assets/images');
-            const destDir = path.join(__dirnameGallery, '../uploads');
-            const defaultImages = [
-                { file: 'project-manthan2.png', title: 'Project Manthan' },
-                { file: 'project-shiksha2.png', title: 'Project Shiksha' },
-                { file: 'hero.png', title: 'Project Pravah' },
-                { file: 'prakruti-seva-samman.jpeg', title: 'Community Ceremony' },
-                { file: 'gallery_image_2.png', title: 'Award Recognition' },
-                { file: 'gallery_image_3.png', title: 'Internship Drive' }
-            ];
-    
-            if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
-            
-            await Gallery.deleteMany({});
-            let created = 0;
-    
-            for (const img of defaultImages) {
-                const sourcePath = path.join(sourceDir, img.file);
-                const destFileName = `seeded_${Date.now()}_${img.file}`;
-                const destPath = path.join(destDir, destFileName);
-                if (fs.existsSync(sourcePath)) {
-                    fs.copyFileSync(sourcePath, destPath);
-                    const buffer = fs.readFileSync(sourcePath);
-                    const ext = path.extname(img.file).toLowerCase();
-                    let mimeType = 'image/jpeg';
-                    if (ext === '.png') mimeType = 'image/png';
-                    else if (ext === '.gif') mimeType = 'image/gif';
-                    
-                    await Gallery.create({ 
-                        imageUrl: `/api/gallery/images/${destFileName}`, 
-                        title: img.title,
-                        imageBuffer: buffer,
-                        contentType: mimeType
-                    });
-                    created++;
-                }
-            }
-            res.status(200).json({ success: true, message: `Successfully seeded ${created} images!` });
-        } catch (error) {
-            res.status(500).json({ success: false, message: error.message });
-        }
-    });
-    
-    export default router;
+
+        res.status(206);
+        res.set('Content-Range', `bytes ${start}-${end}/${totalSize}`);
+        res.set('Content-Length', String(end - start + 1));
+        return getBucket().openDownloadStream(fileObjectId, { start, end: end + 1 }).pipe(res);
+      }
+
+      res.set('Content-Length', String(totalSize));
+      return getBucket().openDownloadStream(fileObjectId).pipe(res);
+    }
+
+    // Legacy support for old DB records that stored small image buffers directly.
+    if (media.imageBuffer) {
+      res.set('Content-Length', String(media.imageBuffer.length));
+      return res.send(media.imageBuffer);
+    }
+
+    return res.status(404).json({ success: false, message: 'Media binary not found in MongoDB' });
+  } catch (error) {
+    console.error('Gallery media stream error:', error);
+    return res.status(500).json({ success: false, message: 'Server error streaming gallery media' });
+  }
+};
+
+router.get('/media/:id', streamGalleryMedia);
+
+// Backward-compatible URL shape, but no local filesystem fallback.
+router.get('/images/:id', streamGalleryMedia);
+
+router.get('/seed', async (req, res) => {
+  res.status(410).json({
+    success: false,
+    message: 'Local filesystem gallery seeding is disabled. Upload gallery photos/videos from the admin portal so they are stored in MongoDB Atlas/GridFS.',
+  });
+});
+
+export default router;
