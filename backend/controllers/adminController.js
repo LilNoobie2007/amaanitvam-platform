@@ -9,8 +9,15 @@ import AuditLog from '../models/auditLog.js';
 import Department from '../models/department.js';
 
 // GET /api/admin/me
+// GET /api/admin/me
 export const getMe = async (req, res) => {
-    res.json({ success: true, user: req.user });
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+        res.json({ success: true, user });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 };
 
 // GET /api/admin/stats
