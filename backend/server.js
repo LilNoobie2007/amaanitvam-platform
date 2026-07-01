@@ -16,7 +16,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import certificateRoutes from "./routes/certificateRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
 import meetingRoutes from "./routes/meetingRoutes.js";
-import taskRoutes from "./routes/taskRoutes.js";
+import taskRoutes from "./routes/TasksRoutes.js";
 import announcementRoutes from "./routes/announcementRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import departmentRoutes from "./routes/departmentRoutes.js";
@@ -37,11 +37,7 @@ const app = express();
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
-app.use(
-  helmet({
-    crossOriginResourcePolicy: false,
-  })
-);
+app.use(helmet({ crossOriginResourcePolicy: false }));
 
 const allowedOrigins = [
   "http://127.0.0.1:5500",
@@ -63,14 +59,12 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-
       return callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
   })
 );
 
-// Razorpay webhook ko JSON parser se pehle rakho
 app.use("/api/webhook", express.raw({ type: "application/json" }), webhookRoutes);
 
 app.use(express.json({ limit: "100mb" }));
