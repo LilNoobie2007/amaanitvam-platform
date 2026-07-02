@@ -90,29 +90,14 @@ export const createMeeting = async (req, res) => {
     }
 };
 
-// Get All Meetings
+// Get All Meetings — non-admins see only meetings they are invited to
 export const getMeetings = async (req, res) => {
     try {
-let query = {};
-
-if (req.user.role !== "admin" && req.user.role !== "super_admin") {
-    const department = await Department.findOne({
-        departmentName: req.user.department
-    });
-
-    if (!department) {
-        return res.status(404).json({
-            success: false,
-            message: "Department not found"
-        });
-    }
-
-    query.department = department._id;
-}
-
-const meetings = await meetingModel.find(query)
-    .populate("attendees", "name email")
-    .populate("department", "departmentName");
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'super_admin';
+        const query = isAdmin ? {} : { attendees: req.user._id };
+        const meetings = await meetingModel.find(query)
+            .populate("attendees", "name email")
+            .populate("department", "departmentName");
         res.status(200).json({ success: true, meetings });
     } catch (error) {
         console.log("Get Meetings Error:", error);
@@ -120,32 +105,22 @@ const meetings = await meetingModel.find(query)
     }
 };
 
-// Get Single Meeting by ID
+// Get Single Meeting — non-admins can only see meetings they are invited to
 export const getMeetingById = async (req, res) => {
     try {
-        let meeting;
+        const meeting = await meetingModel.findById(req.params.id)
+            .populate("attendees", "name email")
+            .populate("department", "departmentName");
 
-if (req.user.role === "admin" || req.user.role === "super_admin") {
-    meeting = await meetingModel.findById(req.params.id);
-} else {
-    const department = await Department.findOne({
-        departmentName: req.user.department
-    });
-
-    meeting = await meetingModel.findOne({
-        _id: req.params.id,
-        department: department._id
-    });
-}
-
-if (!meeting) {
-    return res.status(404).json({
-        success: false,
-        message: "Meeting not found"
-    });
-}
         if (!meeting) {
             return res.status(404).json({ success: false, message: "Meeting not found" });
+        }
+
+        const isAdmin = req.user.role === 'admin' || req.user.role === 'super_admin';
+        const isInvited = meeting.attendees.some(a => a._id.toString() === req.user._id.toString());
+
+        if (!isAdmin && !isInvited) {
+            return res.status(403).json({ success: false, message: "Access denied. You are not invited to this meeting." });
         }
 
         res.status(200).json({ success: true, meeting });
@@ -154,7 +129,6 @@ if (!meeting) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
 // Update Meeting
 export const updateMeeting = async (req, res) => {
     try {
